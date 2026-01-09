@@ -1,0 +1,22 @@
+# Ignore documentation and non-essential files
+**/README.md
+**/LICENSE
+**/QUANTIZATION.md
+**/SOURCE_README.md
+**/FINETUNING.md
+**/quantization_config.json
+**/docker-compose.snippet.yml
+**/.dockerignore
+**/Dockerfile
+
+# Python
+__pycache__/
+*.py[cod]
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,19 @@
+# Ollama Modelfile for qwen2.5-coder-1.5b-instruct
+# Generated: 2026-01-09 20:19:11
+
+FROM ./qwen2.5-coder-1.5b-instruct-Q4_K_M.gguf
+
+# Temperature: Lower = more focused, Higher = more creative
+PARAMETER temperature 0.7
+
+# Top P: Nucleus sampling threshold
+PARAMETER top_p 0.9
+
+# Top K: Limits token selection to top K tokens
+PARAMETER top_k 40
+
+# Repeat Penalty: Reduces repetition
+PARAMETER repeat_penalty 1.1
+
+# System prompt
+SYSTEM """You are a helpful AI assistant."""

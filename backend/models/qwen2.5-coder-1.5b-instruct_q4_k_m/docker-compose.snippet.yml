@@ -1,0 +1,17 @@
+
+  qwen2.5-coder-1.5b-instruct_q4_k_m:
+    build:
+      context: ./backend/models/qwen2.5-coder-1.5b-instruct_q4_k_m
+      dockerfile: Dockerfile
+    container_name: qwen2.5-coder-1.5b-instruct_q4_k_m
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-qwen2.5-coder-1.5b-instruct_q4_k_m:/root/.ollama
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

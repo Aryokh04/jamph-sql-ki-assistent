@@ -8,9 +8,15 @@ ENV/
 llama.cpp/
 
 # API keys and secrets
-apikey.env
 *.env
 !example.apikey.env
+!example.developer.env
+
+# Personal notes
+Personal_notes.md
+
+# Logs
+logs/
 
 # Python
 __pycache__/
