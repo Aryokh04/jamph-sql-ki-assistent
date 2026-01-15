@@ -1,17 +1,6 @@
 # Ignore all models by default
 Models/
 
-# Un-ignore only enabled models (from run_models_config.json)
-!Models/qwen2.5-coder-1.5b-instruct_q4_k_m/
-
-# Within enabled models, exclude unnecessary documentation files
-Models/**/download_metadata.json
-Models/**/quantization_config.json
-Models/**/SOURCE_config.json
-Models/**/SOURCE_generation_config.json
-Models/**/SOURCE_tokenizer_config.json
-Models/**/SOURCE_README.md
-
 # Python cache
 __pycache__/
 *.py[cod]
