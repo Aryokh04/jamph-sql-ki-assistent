@@ -6,7 +6,7 @@ Dette er en liten sjekkliste repositories må oppfylle for å være på GitHub.
 Nav har valgt MIT som standard lisens. Alle repos [må ha en `LICENSE.md`](../LISENSIERING.md).
 
 ## Readme
-Vi har en [standard README](../README.template.md) man kan ta utgangspunkt i.
+Vi har en [standard README](Guider fra NAV/README.template.md) man kan ta utgangspunkt i.
 
 I README må det også fremkomme et kontaktpunkt for koden/teamet. Dersom repoet er åpent *skal* det fremkomme en måte omverden kan ta kontakt på (epost, navn på person, osv). Som et tillegg kan man oppgi slack-kanal osv, men dette er selvfølgelig myntet på interne ansatte (som det står i readme-template).
 
@@ -50,11 +50,11 @@ Hvis du har en branch på forken din som er klar til å slås sammen, vennligst 
 ```
 
 ## Sanering av gammel kode
-Om det er flytting av eksisterende kode må både [kode og Git historikk vaskes](sikkerhetsvask.md)
+Om det er flytting av eksisterende kode må både [kode og Git historikk vaskes](Guider fra NAV/sikkerhetsvask.md)
 
 ## Scanning etter kjente sårbarheter i biblioteker
-Programbiblioteker man er avhengig av må være uten kjente [sikkerhetshull](sårbarhetsscan.md)
+Programbiblioteker man er avhengig av må være uten kjente [sikkerhetshull](Guider fra NAV/sårbarhetsscan.md)
 
 ## Commit-meldinger
 Git historikken bør ha så mye verdi som mulig. Vi har derfor en [anbefaling til
-gode commit meldinger](commit-meldinger.md)
+gode commit meldinger](Guider fra NAV/commit-meldinger.md)

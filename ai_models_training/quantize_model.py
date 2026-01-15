@@ -19,11 +19,14 @@ if DEVELOPER_ENV_PATH.exists():
 # CONFIGURATION
 # ============================================================================
 
-QUANTIZATION_CONFIG = {"method": "Q4_K_M"}
+QUANTIZATION_CONFIG = {
+    "method": "Q4_K_M",
+    "source_model_path": "model training/Models/qwen2.5-coder-1.5b-instruct",
+}
 
 METADATA_CONFIG = {
-    "quantized_by": os.getenv("DEVELOPER_NAME", "Unknown Developer"),
-    "organization": os.getenv("ORGANIZATION", "Unknown Organization"),
+    "quantized_by": os.getenv("GITHUB_HANDLE", "Unknown Developer"),
+    "team": os.getenv("TEAM", "Unknown Team"),
     "role": os.getenv("ROLE", "Unknown Role"),
 }
 
@@ -94,7 +97,7 @@ def write_crash_report(error, error_context=""):
         f.write("Configuration:\n")
         f.write(f"  Method: {QUANTIZATION_CONFIG['method']}\n")
         f.write(f"  User: {METADATA_CONFIG['quantized_by']}\n")
-        f.write(f"  Organization: {METADATA_CONFIG['organization']}\n\n")
+        f.write(f"  Team: {METADATA_CONFIG['team']}\n\n")
         
         if error_context:
             f.write(f"Context: {error_context}\n\n")
@@ -118,16 +121,20 @@ def check_system():
     print_success("Output directories ready")
 
 def copy_source_documentation(source_model_path, output_dir):
-    """Copy LICENSE, README.md, and FINETUNING.md from source model"""
+    """Copy all documentation and config files from source model for full traceability"""
     import shutil
     source_path = Path(source_model_path)
     output_path = Path(output_dir)
+    
+    files_copied = []
+    was_finetuned = False
     
     # Copy LICENSE
     source_license = source_path / "LICENSE"
     if source_license.exists():
         dest_license = output_path / "LICENSE"
         shutil.copy2(source_license, dest_license)
+        files_copied.append("LICENSE")
         print_success("Copied LICENSE")
     else:
         # Log missing license
@@ -153,17 +160,39 @@ def copy_source_documentation(source_model_path, output_dir):
     if source_readme.exists():
         dest_readme = output_path / "SOURCE_README.md"
         shutil.copy2(source_readme, dest_readme)
-        print_success("Copied source README.md → SOURCE_README.md")
+        files_copied.append("SOURCE_README.md")
+        print_success("Copied README.md → SOURCE_README.md")
+    
+    # Copy MODEL_LOG.md if exists (inherits history from source model)
+    source_log = source_path / "MODEL_LOG.md"
+    if source_log.exists():
+        dest_log = output_path / "MODEL_LOG.md"
+        shutil.copy2(source_log, dest_log)
+        files_copied.append("MODEL_LOG.md (inherited)")
+        print_success("Copied MODEL_LOG.md (inheriting model history)")
     
     # Copy FINETUNING.md if exists (for finetuned → quantized workflow)
     source_finetuning = source_path / "FINETUNING.md"
     if source_finetuning.exists():
         dest_finetuning = output_path / "FINETUNING.md"
         shutil.copy2(source_finetuning, dest_finetuning)
+        files_copied.append("FINETUNING.md")
         print_success("Copied FINETUNING.md (finetuned model detected)")
-        return True  # Indicates source was finetuned
+        was_finetuned = True
     
-    return False  # Source was not finetuned
+    # Copy config files for full traceability
+    config_files = ["config.json", "tokenizer_config.json", "generation_config.json"]
+    for config_file in config_files:
+        source_config = source_path / config_file
+        if source_config.exists():
+            dest_config = output_path / f"SOURCE_{config_file}"
+            shutil.copy2(source_config, dest_config)
+            files_copied.append(f"SOURCE_{config_file}")
+    
+    if files_copied:
+        print_success(f"Copied {len(files_copied)} file(s) for traceability: {', '.join(files_copied)}")
+    
+    return was_finetuned
 
 def calculate_size_reduction(original_path, quantized_path):
     def get_dir_size(path):
@@ -280,7 +309,7 @@ def convert_to_gguf(model_path):
                 "original_model": model_path,
                 "quantized_date": datetime.now().isoformat(),
                 "changed_by": METADATA_CONFIG['quantized_by'],
-                "organization": METADATA_CONFIG['organization'],
+                "team": METADATA_CONFIG['team'],
                 "role": METADATA_CONFIG['role'],
                 "source_system": SOURCE_SYSTEM_CONFIG,
                 "target_system": TARGET_SYSTEM_CONFIG,
@@ -308,6 +337,9 @@ def generate_documentation(model_name, model_suffix, quantized_path, original_pa
     method_info = QUANTIZATION_METHODS.get(quant_method, {})
     output_dir = Path(quantized_path)
     
+    # Create relative paths from workspace root
+    relative_path = Path(quantized_path).relative_to(SCRIPT_DIR.parent)
+    
     # Calculate sizes
     try:
         original_size_gb, quantized_size_gb, reduction_pct = calculate_size_reduction(original_path, quantized_path)
@@ -315,114 +347,6 @@ def generate_documentation(model_name, model_suffix, quantized_path, original_pa
         original_size_gb = 0
         quantized_size_gb = 0
         reduction_pct = 0
-    
-    # Generate README.md (main documentation)
-    readme_content = f"""# {model_name}{model_suffix}
-
-## Overview
-Quantized GGUF model optimized for CPU deployment.
-
-- **Quantization Method**: {quant_method} ({method_info.get('description', 'N/A')})
-- **Quality**: {method_info.get('quality', 'N/A')}
-- **Speed**: {method_info.get('speed', 'N/A')}
-- **Quantized by**: {METADATA_CONFIG['quantized_by']} ({METADATA_CONFIG['organization']})
-- **Date**: {datetime.now().strftime("%d.%m.%Y")}
-{"- **Pipeline**: Original → Fine-tuned → Quantized (see FINETUNING.md)" if was_finetuned else "- **Pipeline**: Original → Quantized"}
-
-## Model Sizes
-- **Original**: {original_size_gb:.2f} GB
-- **Quantized**: {quantized_size_gb:.2f} GB  
-- **Reduction**: {reduction_pct:.1f}%
-
-## System Requirements
-- **Target**: CPU-only (no GPU required)
-- **RAM**: {method_info.get('ram_required', 'N/A')}
-- **CPU**: {TARGET_SYSTEM_CONFIG['recommended_threads']}
-
-## Usage with Ollama
-
-```bash
-# Import model to Ollama
-ollama create {model_name} -f Modelfile
-
-# Run model
-ollama run {model_name}
-```
-
-## Files
-- `README.md` - This file
-- `QUANTIZATION.md` - Detailed quantization process
-{"- `FINETUNING.md` - Fine-tuning details (inherited from source)" if was_finetuned else ""}
-- `SOURCE_README.md` - Original model documentation
-- `LICENSE` - License information
-- `Modelfile` - Ollama configuration
-- `*.gguf` - Quantized model file
-- `quantization_config.json` - Metadata
-
-## Status
-{"[SUCCESS]" if status == "success" else f"[WARNING] {status}"}
-
-See `QUANTIZATION.md` for detailed quantization process.
-"""
-    
-    readme_path = output_dir / "README.md"
-    with open(readme_path, "w") as f:
-        f.write(readme_content)
-    print_success(f"Created: README.md")
-    
-    # Generate QUANTIZATION.md (detailed quantization info)
-    quantization_content = f"""# Quantization Details
-
-## Process Information
-- **Date**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-- **Method**: GGUF {quant_method}
-- **Quantized by**: {METADATA_CONFIG['quantized_by']}
-- **Organization**: {METADATA_CONFIG['organization']}
-- **Role**: {METADATA_CONFIG['role']}
-
-## Source Model
-- **Path**: `{original_path}`
-{"- **Type**: Fine-tuned model (see FINETUNING.md)" if was_finetuned else "- **Type**: Original model"}
-
-## Quantization Method: {quant_method}
-- **Description**: {method_info.get('description', 'N/A')}
-- **Size Reduction**: {method_info.get('size_reduction', 'N/A')}
-- **Quality**: {method_info.get('quality', 'N/A')}
-- **Speed**: {method_info.get('speed', 'N/A')}
-- **RAM Required**: {method_info.get('ram_required', 'N/A')}
-
-## Results
-- **Original Size**: {original_size_gb:.2f} GB
-- **Quantized Size**: {quantized_size_gb:.2f} GB
-- **Actual Reduction**: {reduction_pct:.1f}%
-
-## System Configuration
-
-### Source System
-- **GPU**: {SOURCE_SYSTEM_CONFIG['gpu']}
-- **VRAM**: {SOURCE_SYSTEM_CONFIG['vram']}
-- **RAM**: {SOURCE_SYSTEM_CONFIG['ram']}
-- **CUDA**: {SOURCE_SYSTEM_CONFIG['cuda_version']}
-
-### Target System (Deployment)
-- **Device**: {TARGET_SYSTEM_CONFIG['device']}
-- **RAM**: {TARGET_SYSTEM_CONFIG['recommended_ram']}
-- **CPU**: {TARGET_SYSTEM_CONFIG['recommended_threads']}
-
-## Conversion Steps
-1. Converted HuggingFace model to GGUF FP16
-2. Quantized FP16 to {quant_method}
-3. Removed intermediate FP16 file
-4. Generated Ollama Modelfile
-
-## Status
-{"[SUCCESS] Quantization completed" if status == "success" else f"[WARNING] Status: {status}"}
-"""
-    
-    quantization_path = output_dir / "QUANTIZATION.md"
-    with open(quantization_path, "w") as f:
-        f.write(quantization_content)
-    print_success(f"Created: QUANTIZATION.md")
     
     # Generate Modelfile for Ollama
     gguf_files = list(output_dir.glob("*.gguf"))
@@ -454,7 +378,75 @@ SYSTEM \"\"\"You are a helpful AI assistant.\"\"\"
         f.write(modelfile_content)
     print_success(f"Created: Modelfile")
     
-    print_success(f"All documentation written to: {output_dir}")
+    # Append to MODEL_LOG.md
+    log_entry = f"""
+{'='*80}
+## Quantization Log Entry
+**Date**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}  
+**Model**: {model_name}{model_suffix}  
+**Quantized by**: {METADATA_CONFIG['quantized_by']} ({METADATA_CONFIG['team']}, {METADATA_CONFIG['role']})  
+
+### Quantization Configuration
+- **Method**: GGUF {quant_method}
+- **Description**: {method_info.get('description', 'N/A')}
+- **Quality**: {method_info.get('quality', 'N/A')}
+- **Speed**: {method_info.get('speed', 'N/A')}
+- **Pipeline**: {"Original → Fine-tuned → Quantized" if was_finetuned else "Original → Quantized"}
+
+### Model Sizes
+- **Original**: {original_size_gb:.2f} GB
+- **Quantized**: {quantized_size_gb:.2f} GB
+- **Reduction**: {reduction_pct:.1f}% (Expected: {method_info.get('size_reduction', 'N/A')})
+
+### System Requirements
+- **Target**: CPU-only (no GPU required)
+- **RAM**: {method_info.get('ram_required', 'N/A')}
+- **CPU**: {TARGET_SYSTEM_CONFIG['recommended_threads']}
+
+### Source System Configuration
+- **GPU**: {SOURCE_SYSTEM_CONFIG['gpu']}
+- **VRAM**: {SOURCE_SYSTEM_CONFIG['vram']}
+- **RAM**: {SOURCE_SYSTEM_CONFIG['ram']}
+- **CUDA**: {SOURCE_SYSTEM_CONFIG['cuda_version']}
+
+### Conversion Process
+1. Converted HuggingFace model to GGUF FP16
+2. Quantized FP16 to {quant_method}
+3. Removed intermediate FP16 file
+4. Generated Ollama Modelfile
+
+### Output
+- **Location**: `{relative_path}`
+- **Config**: `{relative_path}/quantization_config.json`
+- **Status**: {"SUCCESS" if status == "success" else f"WARNING - {status}"}
+
+### Usage with Ollama
+```bash
+ollama create {model_name} -f Modelfile
+ollama run {model_name}
+```
+
+{'='*80}
+"""
+    
+    log_path = output_dir / "MODEL_LOG.md"
+    
+    # If MODEL_LOG.md doesn't exist, create header first
+    if not log_path.exists():
+        header = """# Model Activity Log
+
+This file tracks all operations performed on this model.
+
+"""
+        with open(log_path, "w") as f:
+            f.write(header)
+        print_info("Created new MODEL_LOG.md")
+    
+    # Append quantization entry to MODEL_LOG.md
+    with open(log_path, "a") as f:
+        f.write(log_entry)
+    
+    print_success(f"Appended to: {log_path}")
 
 # ============================================================================
 # MAIN
@@ -465,14 +457,30 @@ def main():
         print_header(f"Quantization Script - {QUANTIZATION_CONFIG['method']}")
         print_info(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         
-        if len(sys.argv) != 2:
-            print_error("Usage: python quantize_model.py <model_path>")
-            sys.exit(1)
+        # Get model path from config or command line argument
+        if len(sys.argv) > 1:
+            # Command line argument takes precedence
+            model_path = sys.argv[1]
+        else:
+            # Use configured path
+            configured_path = QUANTIZATION_CONFIG.get("source_model_path")
+            if not configured_path:
+                print_error("No model path specified in QUANTIZATION_CONFIG['source_model_path']")
+                print_error("Usage: python quantize_model.py <model_path>")
+                print_error("   OR: Set 'source_model_path' in QUANTIZATION_CONFIG")
+                sys.exit(1)
+            
+            # Resolve relative path from script directory
+            if not os.path.isabs(configured_path):
+                model_path = str(SCRIPT_DIR / configured_path)
+            else:
+                model_path = configured_path
         
-        model_path = sys.argv[1]
         if not os.path.exists(model_path):
             print_error(f"Model not found: {model_path}")
             sys.exit(1)
+        
+        print_info(f"Source model: {model_path}")
         
         check_system()
         
