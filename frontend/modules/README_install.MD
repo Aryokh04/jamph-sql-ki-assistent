@@ -9,7 +9,7 @@ Instructions for installing optional modules or repositories.
    git clone https://github.com/eilifjohansen/umami-start-student frontend/modules/umami-start-student
 
 2. **Add the BigQuery key file**: 
-   - Paste the file `fagtorsdag-prod-81a6-52ac69097f46.json` into the `frontend/modules/umami-start-student` folder
+   - Paste the file `fagtorsdag-prod-81a6-52ac69097f46.json` into the `frontend/modules/umami-start-student` folder. Keep the file secret, do not share it.
 
 3. **Install and start**:
    ```bash
