@@ -2,16 +2,11 @@
 
 Instructions for installing optional modules or repositories.
 
-## Student Umami
-
-### Installation Steps
-1. **Clone the repository**:
+## Student Umami Module
    git clone https://github.com/eilifjohansen/umami-start-student frontend/modules/umami-start-student
-
-2. **Add the BigQuery key file**: 
    - Paste the file `fagtorsdag-prod-81a6-52ac69097f46.json` into the `frontend/modules/umami-start-student` folder. Keep the file secret, do not share it.
 
-3. **Install and start**:
+**Install and start**:
    cd frontend/modules/umami-start-student
    npm install (If first time)
    npm run start
@@ -19,3 +14,20 @@ Instructions for installing optional modules or repositories.
    
 
    Note: To restart the server, press `Ctrl+C` to stop it, then run `npm run start` again.
+
+## Metabase Module
+
+docker pull metabase/metabase:latest
+docker run -d -p 3000:3000 --name metabase metabase/metabase
+   - Open http://localhost:3000 in your browser
+   - Click "Get started" and fill in the required information
+   - You can skip most options and add data later in the interface
+
+**Connect to BigQuery**
+Download the BigQuery dataset file `fagtorsdag.json` from the email
+In Metabase, go to **Data → Databases → Add database**
+Select BigQuery and upload the JSON file with your credentials **keep the file secret **
+
+**Optional - Clone Metabase source code for reference** (Warning: ~200-300 MB):
+   git clone --depth 1 https://github.com/metabase/metabase.git frontend/modules/metabase
+   Source: https://github.com/metabase/metabase
