@@ -9,8 +9,8 @@ llama.cpp/
 
 # API keys and secrets
 *.env
-!example.apikey.env
-!example.developer.env
+!/example.apikey.env
+!/example.developer.env
 
 # Personal notes
 Personal_notes.md
