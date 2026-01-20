@@ -1,8 +1,0 @@
-# Ignore logs
-logs/
-
-# Ignore all models by default
-model training/Models/
-
-# Un-ignore models to share on GitHub
-!model training/Models/qwen2.5-coder-1.5b-instruct_q4_k_m/

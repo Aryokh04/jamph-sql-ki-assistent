@@ -1,1 +1,1 @@
-Here will be isntructions to install optional modules or repositories.
+Here will be instructions to install optional modules or repositories.

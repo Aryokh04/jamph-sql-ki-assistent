@@ -5,13 +5,12 @@ Bruker en AI modell og arkitektur til å skrive BigQuery spørringer. Forenkler 
 ## Komme i gang
 
 #### Frontend:
+Dette er main repository. Eksterne projekter lastes ned i modules mappen. Se installasjonskript for dette.
+
+Det er satt opp slik at en kan ha backend mappen inne i denne filen som en sub modul ved.
 
 #### Backend:
-
-#### ai_model_training: 
-Requirments: Pc med GPU som støtter cuda arkitektur (og minimum 8GB Vram for fintuning).
-** Mulig jeg setter opp en UV **
-Kjør filen test_compablity.py og installer pakker helt til alle testene består.
+Dette er et eget repository og har også sin egen modules mappe.
 
 ---
 

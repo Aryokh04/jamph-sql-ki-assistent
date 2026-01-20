@@ -62,6 +62,7 @@ next-env.d.ts
 logs/
 div/
 
+!README_install.MD
 
 backend/*
 !backend/README_install.MD
