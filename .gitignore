@@ -63,8 +63,8 @@ logs/
 div/
 
 
-backend/
+backend/*
 !backend/README_install.MD
 
-frontend/modules/
+frontend/modules/*
 !frontend/modules/README_install.MD
