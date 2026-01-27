@@ -6,7 +6,7 @@ git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend backe
 
 Instructions for installing optional modules or repositories.
 
-## Student Umami Module
+## Student Umami Module (To download UMAMI Student edition and run it locally)
    git clone https://github.com/eilifjohansen/umami-start-student frontend/modules/umami-start-student
    - Paste the file `fagtorsdag-prod-81a6-52ac69097f46.json` into the `frontend/modules/umami-start-student` folder. Keep the file secret, do not share it.
 
@@ -20,9 +20,10 @@ Instructions for installing optional modules or repositories.
    Note: To restart the server, press `Ctrl+C` to stop it, then run `npm run start` again.
 
 ## Metabase Module
-
-docker pull metabase/metabase:latest
-docker run -d -p 3000:3000 --name metabase metabase/metabase
+**Start Docker Desktop first** - Make sure Docker Desktop is running before running any **docker commands**
+docker pull metabase/metabase:latest (If first time)
+docker run -d -p 3000:3000 --name metabase metabase/metabase (if first time)
+docker start metabase (If metabase is already created and is not running, harmless if already running)
    - Open http://localhost:3000 in your browser
    - Click "Get started" and fill in the required information
    - You can skip most options and add data later in the interface
