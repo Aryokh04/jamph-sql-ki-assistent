@@ -139,12 +139,20 @@ function Home() {
                             Grafbyggeren lar deg skreddersy grafer og tabeller, som kan deles og legges til i Metabase.
                         </p>
                     </div>
-                    <Link
-                        href="/grafbygger"
-                        className="primary-button"
-                    >
-                        Gå til Grafbyggeren
-                    </Link>
+                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                        <Link
+                            href="/grafbygger"
+                            className="primary-button"
+                        >
+                            Gå til Grafbyggeren
+                        </Link>
+                        <Link
+                            href="/ai-builder"
+                            className="primary-button"
+                        >
+                            Gå til KI byggeren
+                        </Link>
+                    </div>
                 </div>
             </Page.Block>
 

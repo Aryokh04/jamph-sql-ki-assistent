@@ -11,6 +11,7 @@ import Charts from "./pages/analysis/Chartbuilder.tsx";
 import MetabaseGuide from "./pages/articles/MetabaseGuide.tsx";
 
 import SqlEditor from "./pages/analysis/SqlEditor.tsx";
+import AiChartBuilder from "./pages/analysis/AiChartBuilder.tsx";
 import Grafdeling from "./pages/analysis/Grafdeling.tsx";
 import UserJourney from "./pages/analysis/UserJourney.tsx";
 import Funnel from "./pages/analysis/Funnel.tsx";
@@ -41,6 +42,7 @@ const routes = [
 
     { path: "/taksonomi", component: <Taksonomi /> },
     { path: "/grafbygger", component: <Charts /> },
+    { path: "/ai-builder", component: <AiChartBuilder /> },
     { path: "/metabase", component: <MetabaseGuide /> },
 
     { path: "/sql", component: <SqlEditor /> },
