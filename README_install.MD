@@ -1,7 +1,6 @@
 # Frontend Installation Instructions
 
-## Student Umami Module (To download UMAMI Student edition and run it locally)
-**This is the original for reference**
+## Student Umami Module (This procject contains a local version of UMAMI Student edition)
    umami-start-student
    - Paste the file `fagtorsdag-prod-81a6-52ac69097f46.json` into the `frontend/umami-start-student` folder. Keep the file secret, do not share it.
 
