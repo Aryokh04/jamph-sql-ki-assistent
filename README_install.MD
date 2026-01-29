@@ -1,3 +1,18 @@
+# Frontend Installation Instructions
+
+## Student Umami Module (To download UMAMI Student edition and run it locally)
+**This is the original for reference**
+   umami-start-student
+   - Paste the file `fagtorsdag-prod-81a6-52ac69097f46.json` into the `frontend/umami-start-student` folder. Keep the file secret, do not share it.
+
+**Install and start**:
+   cd frontend
+   npm install (If first time)
+   npm run start
+   Click the link to continue
+   
+   Note: To restart the server, press `Ctrl+C` to stop it, then run `npm run start` again.
+
 # Backend Installation Instructions
 
 git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend backend
@@ -7,6 +22,7 @@ git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend backe
 Instructions for installing optional modules or repositories.
 
 ## Student Umami Module (To download UMAMI Student edition and run it locally)
+**This is the original for reference**
    git clone https://github.com/eilifjohansen/umami-start-student frontend/modules/umami-start-student
    - Paste the file `fagtorsdag-prod-81a6-52ac69097f46.json` into the `frontend/modules/umami-start-student` folder. Keep the file secret, do not share it.
 
