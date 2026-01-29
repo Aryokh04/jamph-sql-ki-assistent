@@ -85,8 +85,6 @@ Type: "Maven: Create Maven Project"
 - Use Maven sidebar in VS Code
 - OR terminal: mvn clean compile (uses VS Code's built-in Maven)
 
-
-
 11. Eslint and Prettier setup for React/TypeScript (if needed):
 - Install ESLint and Prettier extensions in VS Code.
 - Initialize ESLint in your project:
@@ -104,7 +102,17 @@ Type: "Maven: Create Maven Project"
   }
   ```
 
-12. Code Quality Tools (To explore):
+12. Install UV (Python package manager and version controller):
+
+- Windows:
+  powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+- macOS/Linux:
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+
+- Verify installation: uv --version
+
+13. Code Quality Tools (To explore):
 
 **For Kotlin/Java:**
 - Install "SonarLint" extension in VS Code for code quality checks
@@ -122,4 +130,4 @@ Type: "Maven: Create Maven Project"
     }
   }
   ```
-  13. Turn on additional features and models in Copilot !
+  14. Turn on additional features and models in Copilot !
