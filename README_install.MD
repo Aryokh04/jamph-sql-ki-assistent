@@ -12,7 +12,6 @@
    
    Note: To restart the server, press `Ctrl+C` to stop it, then run `npm run start` again.
 
-Copy the 'createfakeuser.env' file to set the MOCK_NAV_IDENT variable to your desired ident, store as .env.
 
 # Backend Installation Instructions
 
