@@ -41,9 +41,6 @@ git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend Jamph
    - Open in browser: https://mlflow.vishvadukan.no
    - Login with username and password from `mlflow.env`
    - View experiments, models, and metrics
-
-
-
   
 
 **For local testing only** (optional):
@@ -51,7 +48,10 @@ git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend Jamph
    - Access at http://localhost:5001
    - Note: Local instance won't share data with the team
 
-
+**For Nav production deployment**:
+   - Deploy MLFlow to Nav's internal infrastructure
+   - Update `MLFLOW_TRACKING_URI` environment variable to point to Nav's server
+   - All code remains the same - only the connection string changes
 
 ## Jamph-DB Setup (PostgreSQL Database)
 
@@ -76,6 +76,10 @@ git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend Jamph
    - Update database environment variables to point to Nav's server
    - All code remains the same - only the connection details change
 
+
+## Nav internal Ollama repo
+
+git clone https://github.com/navikt/reops-ollama.git reops-ollama
 
 ## Docker Compose Services **in progress**
 
