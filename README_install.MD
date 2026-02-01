@@ -27,6 +27,56 @@ git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend Jamph
 ## Training Pipeline Module
    git clone https://github.com/PerErikGronvik/Jamph-ML-Trainer Jamph-ML-Trainer
 
+## MLFlow Setup (Experiment Tracking & Model Registry)
+
+**MLFlow is hosted centrally** - you don't need to install it locally. 
+
+### Accessing MLFlow
+
+**Authentication Required:**
+   - MLFlow is protected with basic authentication
+   - Get credentials from `mlflow.env` sent on email (keep secret!)
+
+**Web Interface:**
+   - Open in browser: https://mlflow.vishvadukan.no
+   - Login with username and password from `mlflow.env`
+   - View experiments, models, and metrics
+
+
+
+  
+
+**For local testing only** (optional):
+   - Run MLFlow via Docker: `docker compose --profile mlflow up -d`
+   - Access at http://localhost:5001
+   - Note: Local instance won't share data with the team
+
+
+
+## Jamph-DB Setup (PostgreSQL Database)
+
+**Jamph-DB is hosted centrally** - you don't need to install PostgreSQL locally.
+
+**Development environment**: Connect to the shared database server
+   - Set environment variables:
+     - `DB_HOST=<server-address>`
+     - `DB_PORT=5432`
+     - `DB_NAME=jamph_db`
+     - `DB_USER=jamph`
+     - `DB_PASSWORD=<password>`
+   - All team members connect to the same database instance to share data
+
+**For local testing only** (optional):
+   - Run PostgreSQL via Docker: `docker compose --profile jamph-db up -d`
+   - Access at localhost:8002 (mapped to PostgreSQL port 5432)
+   - Note: Local instance won't share data with the team
+
+**For Nav production deployment**:
+   - Deploy PostgreSQL to Nav's internal infrastructure
+   - Update database environment variables to point to Nav's server
+   - All code remains the same - only the connection details change
+
+
 ## Docker Compose Services **in progress**
 
 **Start all services**:

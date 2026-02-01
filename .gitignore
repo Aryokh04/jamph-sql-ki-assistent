@@ -11,6 +11,7 @@ llama.cpp/
 *.env
 !/example.apikey.env
 !/example.developer.env
+!/example.mlflow.env
 
 # Personal notes
 Personal_notes.md
