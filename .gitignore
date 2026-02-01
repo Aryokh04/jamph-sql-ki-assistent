@@ -78,6 +78,7 @@ Jamph-ML-Trainer/
 Jamph-DB/
 Jamph-Ollama/
 MLFlow/
+reops-ollama/
 
 # Root-level frontend directory (legacy)
 frontend/
