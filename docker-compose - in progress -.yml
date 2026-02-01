@@ -1,0 +1,105 @@
+services:
+  jamph-ml-trainer:
+    profiles: ["jamph-ml-trainer", "all"]
+    build: 
+      context: ./Jamph-ML-Trainer
+      dockerfile: Dockerfile
+    container_name: jamph-ml-trainer
+    ports:
+      - "8003:8003"
+    volumes:
+      - training_data:/data
+      - models:/models
+      - ./Jamph-ML-Trainer/flows:/flows
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    networks:
+      - ai-network
+    depends_on:
+      - mlflow
+    restart: unless-stopped
+    command: tail -f /dev/null
+
+  mlflow:
+    profiles: ["mlflow", "all"]
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: mlflow
+    ports:
+      - "5001:5000"
+    volumes:
+      - mlflow_data:/mlflow
+    command: mlflow server --backend-store-uri sqlite:////mlflow/mlflow.db --default-artifact-root /mlflow/artifacts --host 0.0.0.0
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  jamph-rag-api-umami:
+    # profiles: ["jamph-rag-api-umami", "all"]
+    build: 
+      context: ./Jamph-Rag-Api-Umami
+      dockerfile: Dockerfile
+    container_name: jamph-rag-api-umami
+    ports:
+      - "8004:8004"
+    volumes:
+      - ./Jamph-Rag-Api-Umami:/app
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - OLLAMA_HOST=http://jamph-ollama:11434
+    networks:
+      - ai-network
+    depends_on:
+      - mlflow
+      - jamph-ollama
+      - jamph-db
+    restart: unless-stopped
+
+  jamph-db:
+    # profiles: ["jamph-db", "all"]
+    image: postgres:16-alpine
+    container_name: jamph-db
+    ports:
+      - "8002:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=jamph_db
+      - POSTGRES_USER=jamph
+      - POSTGRES_PASSWORD=jamph_password
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  jamph-ollama:
+    profiles: ["jamph-ollama", "all"]
+    image: ollama/ollama:latest
+    container_name: jamph-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+      - models:/models:ro
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+      - OLLAMA_NUM_PARALLEL=1
+      - OLLAMA_MAX_LOADED_MODELS=1
+    networks:
+      - ai-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  training_data:
+  models:
+  mlflow_data:
+  ollama_data:
+  db_data:
+
+networks:
+  ai-network:
+    driver: bridge

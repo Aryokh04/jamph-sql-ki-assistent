@@ -11,7 +11,6 @@ llama.cpp/
 *.env
 !/example.apikey.env
 !/example.developer.env
-!/createfakeuser.env
 
 # Personal notes
 Personal_notes.md
@@ -63,8 +62,27 @@ next-env.d.ts
 logs/
 div/
 
-backend/
 
+# Component based project structure
+
+## Reference projects for context
+Start-Umami-Student/
+Metabase/
+## Out project and related components
+Jamph-Umami-Frontend/
+Jamph-Rag-Api-Umami/
+# Trains and keeps model history with MLFlow.
+Jamph-ML-Trainer/
+# For rag and potentially more ai related.
+Jamph-DB/
+Jamph-Ollama/
+MLFlow/
+
+# Root-level frontend directory (legacy)
+frontend/
+
+
+backend/
 
 frontend/modules/*
 !frontend/modules/README_install.MD
