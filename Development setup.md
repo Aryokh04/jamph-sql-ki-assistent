@@ -7,12 +7,30 @@ This document help you set up a development environment for Kotlin using Visual 
   - git config --global user.name "Your Name"
   - git config --global user.email "your.email@example.com"
 
-2. Install VS Code extensions for Kotlin and Maven:
+2. Install Chocolatey (Windows Package Manager - Optional but Recommended):
+
+**Windows only:**
+1. Open PowerShell as Administrator (Right-click PowerShell → Run as Administrator)
+2. Run the following command:
+   ```powershell
+   Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+   ```
+3. Close and reopen PowerShell (as Administrator) to verify installation:
+   ```powershell
+   choco --version
+   ```
+4. Chocolatey makes it easier to install tools like Maven, Python, Node.js, etc.
+
+**Note:** macOS users use Homebrew (brew), Linux users use their distribution's package manager (apt, dnf, etc.)
+
+3. Install VS Code extensions for Kotlin and Maven:
 
 "Extension Pack for Java" by Microsoft (includes Maven support), and "Language Support for Java(TM)" by Red Hat for build tool integration.
 
-3. Install JDK:
-Download JDK (LTS versions) from: https://adoptium.net/
+4. Install JDK: 
+Download JDK (LTS version 21) from: https://adoptium.net/
+
+or Run PowerShell as Administrator: choco install temurin21 -y
 
 - Set java in path:
   - Windows: Set JAVA_HOME and update PATH in Environment Variables.
@@ -130,4 +148,53 @@ Type: "Maven: Create Maven Project"
     }
   }
   ```
-  14. Turn on additional features and models in Copilot !
+
+14. Install Maven (Required for backend development):
+
+**Windows:**
+1. Check if Maven is already installed: `mvn --version`
+2. If not installed, first install Chocolatey (if you haven't already from step 2):
+   - Open PowerShell as Administrator
+   - Run:
+     ```powershell
+     Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+     ```
+   - Close and reopen PowerShell as Administrator
+   - Verify: `choco --version`
+3. Install Maven using Chocolatey:
+   ```powershell
+   choco install maven -y
+   ```
+     ```
+5. Restart VS Code and verify: `mvn --version`
+
+**macOS:**
+1. Check if Maven is already installed: `mvn --version`
+2. Install using Homebrew (recommended):
+   ```bash
+   brew install maven
+   ```
+3. Or download manually:
+   - Download from: https://maven.apache.org/download.cgi
+   - Extract to `/usr/local/apache-maven`
+   - Add to PATH in `~/.zshrc` or `~/.bashrc`:
+     ```bash
+     export PATH="/usr/local/apache-maven/bin:$PATH"
+     ```
+   - Apply changes: `source ~/.zshrc` or `source ~/.bashrc`
+4. Verify installation: `mvn --version`
+
+**Linux:**
+1. Check if Maven is already installed: `mvn --version`
+2. Install using package manager:
+   ```bash
+   # Ubuntu/Debian
+   sudo apt update
+   sudo apt install maven -y
+   
+   # Fedora/RHEL
+   sudo dnf install maven -y
+   ```
+3. Verify installation: `mvn --version`
+
+15. Turn on additional features and models in Copilot !

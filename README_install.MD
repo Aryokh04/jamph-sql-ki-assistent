@@ -7,8 +7,9 @@
    - Paste the file `fagtorsdag-prod-81a6-52ac69097f46.json` into the `Jamph-Umami-Frontend` folder. Keep the file secret, do not share it.
 
 **Install and start**:
-   cd Jamph-Umami-Frontend && npm install && cd .. (If first time)
-   cd Jamph-Umami-Frontend && npm run start
+   cd Jamph-Umami-Frontend
+   npm install (If first time)
+   npm run start
    Click the link to continue
    
    Note: To restart the server, press `Ctrl+C` to stop it, then run `npm run start` again.
