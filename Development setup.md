@@ -138,7 +138,7 @@ Download Python 3.11 or later from: https://www.python.org/downloads/
 
 Download Node.js LTS from: https://nodejs.org/
 
-- Verify installation: node --version and npm --version
+- Verify installation: node --version && npm --version
 
 10. Install VS Code extensions for JavaScript/TypeScript:
 
