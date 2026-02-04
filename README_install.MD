@@ -14,11 +14,119 @@
    
    Note: To restart the server, press `Ctrl+C` to stop it, then run `npm run start` again.
 
-# This is our backend API for the KI assistant, it is called from frontend and it talks to Ollama and Database and assembles the RAG system.
+## Jamph-Rag-Api-Umami (Backend RAG API)
 
-git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend Jamph-Rag-Api-Umami
+This is our backend API for the KI assistant. It is called from the frontend and talks to Ollama and Database to assemble the RAG (Retrieval-Augmented Generation) system.
 
-**install instructions will be here**
+**Clone the repository**:
+   ```bash
+   git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend Jamph-Rag-Api-Umami
+   ```
+
+**Prerequisites**:
+   - Python 3.11 or later (see Development setup.md)
+   - UV package manager (see Development setup.md step 11)
+   - Docker Desktop running (for Ollama and PostgreSQL dependencies)
+
+**Install and start**:
+
+**Windows (PowerShell):**
+   ```powershell
+   cd Jamph-Rag-Api-Umami
+   
+   # Install dependencies using UV (recommended)
+   uv sync
+   # Or using pip
+   pip install -r requirements.txt
+   
+   # Set up environment variables
+   copy example.env .env
+   # Edit .env file with your configuration (use notepad or VS Code)
+   
+   # Start dependencies (Ollama and Database)
+   cd ..
+   docker compose up jamph-ollama jamph-db -d
+   
+   # Return to API directory and start the API
+   cd Jamph-Rag-Api-Umami
+   python main.py
+   # Or with UV:
+   uv run python main.py
+   ```
+
+**macOS:**
+   ```bash
+   cd Jamph-Rag-Api-Umami
+   
+   # Install dependencies using UV (recommended)
+   uv sync
+   # Or using pip
+   pip3 install -r requirements.txt
+   
+   # Set up environment variables
+   cp example.env .env
+   # Edit .env file with your configuration (use nano, vim, or VS Code)
+   
+   # Start dependencies (Ollama and Database)
+   cd ..
+   docker compose up jamph-ollama jamph-db -d
+   
+   # Return to API directory and start the API
+   cd Jamph-Rag-Api-Umami
+   python3 main.py
+   # Or with UV:
+   uv run python3 main.py
+   ```
+
+**Linux:**
+   ```bash
+   cd Jamph-Rag-Api-Umami
+   
+   # Install dependencies using UV (recommended)
+   uv sync
+   # Or using pip
+   pip3 install -r requirements.txt
+   
+   # Set up environment variables
+   cp example.env .env
+   # Edit .env file with your configuration (use nano, vim, or VS Code)
+   
+   # Start dependencies (Ollama and Database)
+   cd ..
+   docker compose up jamph-ollama jamph-db -d
+   
+   # Return to API directory and start the API
+   cd Jamph-Rag-Api-Umami
+   python3 main.py
+   # Or with UV:
+   uv run python3 main.py
+   ```
+
+**Environment variables to configure in .env file**:
+   - `OLLAMA_HOST=http://localhost:11434`
+   - `DB_HOST=localhost`
+   - `DB_PORT=8002`
+   - `DB_NAME=jamph_db`
+   - `DB_USER=jamph`
+   - `DB_PASSWORD=jamph_password`
+   - `MLFLOW_TRACKING_URI=https://mlflow.vishvadukan.no`
+
+**Verify installation**:
+   - API should be running at http://localhost:8004
+   - Check API health endpoint: http://localhost:8004/health (if available)
+   - Check logs for any connection errors to Ollama or database
+
+**Using Docker Compose** (alternative):
+   ```bash
+   # From project root
+   docker compose up jamph-rag-api-umami -d
+   ```
+   Note: This will also start all dependencies (Ollama, database, MLFlow)
+
+**To restart the API**:
+   - Press `Ctrl+C` to stop the server
+   - **Windows**: Run `python main.py` or `uv run python main.py` again
+   - **macOS/Linux**: Run `python3 main.py` or `uv run python3 main.py` again
 
 
 # Setup Instructions
