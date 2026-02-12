@@ -16,93 +16,81 @@
 
 ## Jamph-Rag-Api-Umami (Backend RAG API)
 
-This is our backend API for the KI assistant. It is called from the frontend and talks to Ollama and Database to assemble the RAG (Retrieval-Augmented Generation) system.
+This is our backend API for the KI assistant. It is called from the frontend and talks to Ollama and the database to assemble the RAG (Retrieval-Augmented Generation) system.
+
+**Note:** This is a Java/Kotlin backend using Maven, not Python.
 
 **Clone the repository**:
+
+**Windows (PowerShell):**
+   ```powershell
+   git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend Jamph-Rag-Api-Umami
+   ```
+
+
+**MacOS/Linux**:
+
    ```bash
    git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend Jamph-Rag-Api-Umami
    ```
 
+
 **Prerequisites**:
-   - Python 3.11 or later (see Development setup.md)
-   - UV package manager (see Development setup.md step 11)
+   - JDK 21 (see Development setup.md step 3)
+   - Maven (see Development setup.md step 4)
    - Docker Desktop running (for Ollama and PostgreSQL dependencies)
 
-**Install and start**:
+**Setup and run the API**:
 
 **Windows (PowerShell):**
    ```powershell
-   cd Jamph-Rag-Api-Umami
+   cd Jamph-Rag-Api-Umami/api
    
-   # Install dependencies using UV (recommended)
-   uv sync
-   # Or using pip
-   pip install -r requirements.txt
+   # Set up environment variables (if needed)
+   # copy example.env .env
+   # Edit .env file with your configuration
    
-   # Set up environment variables
-   copy example.env .env
-   # Edit .env file with your configuration (use notepad or VS Code)
-   
-   # Start dependencies (Ollama and Database)
-   cd ..
+   # Start dependencies (Ollama and Database) from project root
+   cd ../..
    docker compose up jamph-ollama jamph-db -d
    
-   # Return to API directory and start the API
-   cd Jamph-Rag-Api-Umami
-   python main.py
-   # Or with UV:
-   uv run python main.py
+   # Return to API directory
+   cd Jamph-Rag-Api-Umami/api
+   
+   # Build the project
+   mvn clean install
+   
+   # Run the application
+   mvn spring-boot:run
+   # Or run the JAR file directly:
+   # java -jar target/sql-ki-assistent-*.jar
    ```
 
-**macOS:**
+**macOS/Linux:**
    ```bash
-   cd Jamph-Rag-Api-Umami
-   
-   # Install dependencies using UV (recommended)
-   uv sync
-   # Or using pip
-   pip3 install -r requirements.txt
+   cd Jamph-Rag-Api-Umami/api
    
    # Set up environment variables
    cp example.env .env
    # Edit .env file with your configuration (use nano, vim, or VS Code)
    
-   # Start dependencies (Ollama and Database)
-   cd ..
+   # Start dependencies (Ollama and Database) from project root
+   cd ../..
    docker compose up jamph-ollama jamph-db -d
    
-   # Return to API directory and start the API
-   cd Jamph-Rag-Api-Umami
-   python3 main.py
-   # Or with UV:
-   uv run python3 main.py
+   # Return to API directory
+   cd Jamph-Rag-Api-Umami/api
+   
+   # Build the project
+   mvn clean install
+   
+   # Run the application
+   mvn spring-boot:run
+   # Or run the JAR file directly:
+   # java -jar target/sql-ki-assistent-*.jar
    ```
 
-**Linux:**
-   ```bash
-   cd Jamph-Rag-Api-Umami
-   
-   # Install dependencies using UV (recommended)
-   uv sync
-   # Or using pip
-   pip3 install -r requirements.txt
-   
-   # Set up environment variables
-   cp example.env .env
-   # Edit .env file with your configuration (use nano, vim, or VS Code)
-   
-   # Start dependencies (Ollama and Database)
-   cd ..
-   docker compose up jamph-ollama jamph-db -d
-   
-   # Return to API directory and start the API
-   cd Jamph-Rag-Api-Umami
-   python3 main.py
-   # Or with UV:
-   uv run python3 main.py
-   ```
-
-**Environment variables to configure in .env file**:
+**Environment variables** (configure via application.properties or environment):
    - `OLLAMA_HOST=http://localhost:11434`
    - `DB_HOST=localhost`
    - `DB_PORT=8002`
@@ -124,9 +112,8 @@ This is our backend API for the KI assistant. It is called from the frontend and
    Note: This will also start all dependencies (Ollama, database, MLFlow)
 
 **To restart the API**:
-   - Press `Ctrl+C` to stop the server
-   - **Windows**: Run `python main.py` or `uv run python main.py` again
-   - **macOS/Linux**: Run `python3 main.py` or `uv run python3 main.py` again
+   - Press `Ctrl+C` to stop the server in the terminal
+   - Run `mvn spring-boot:run` again from the `Jamph-Rag-Api-Umami/api` directory
 
 
 # Setup Instructions
@@ -136,7 +123,22 @@ This is our backend API for the KI assistant. It is called from the frontend and
 ## Training Pipeline Module
    git clone https://github.com/PerErikGronvik/Jamph-ML-Trainer Jamph-ML-Trainer
 
-## MLFlow Setup (Experiment Tracking & Model Registry)
+
+
+## Jamph-MLflow:
+
+**Windows (PowerShell):**
+   ```powershell
+   git clone https://github.com/Mobin1738/Jamph-MLFlow Jamph-MLflow
+   ```
+
+**macOS/Linux:**
+   ```bash
+   git clone https://github.com/Mobin1738/Jamph-MLFlow Jamph-MLflow
+   ```
+
+**Next steps**:
+   - Open [Jamph-MLflow/README.md](Jamph-MLflow/README.md) for repo-specific setup details
 
 **MLFlow is hosted centrally** - you don't need to install it locally. 
 

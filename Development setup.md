@@ -1,13 +1,13 @@
 ""
 This document help you set up a development environment for Kotlin using Visual Studio Code (VS Code), React, python and Maven.
 ""
-1. git setup (if needed):
+# 1. git setup (if needed):
 - Install git from: https://git-scm.com/downloads
 - Configure git:
   - git config --global user.name "Your Name"
   - git config --global user.email "your.email@example.com"
 
-2. Install Chocolatey (Windows Package Manager - Optional but Recommended):
+# 2. Install Chocolatey (Windows Package Manager - Optional but Recommended):
 
 **Windows only:**
 1. Open PowerShell as Administrator (Right-click PowerShell → Run as Administrator)
@@ -23,7 +23,7 @@ This document help you set up a development environment for Kotlin using Visual 
 
 **Note:** macOS users use Homebrew (brew), Linux users use their distribution's package manager (apt, dnf, etc.)
 
-3. Install JDK: 
+# 3. Install JDK: 
 Download JDK (LTS version 21) from: https://adoptium.net/
 
 or Run PowerShell as Administrator: choco install temurin21 -y
@@ -46,7 +46,7 @@ or Run PowerShell as Administrator: choco install temurin21 -y
      export PATH=$JAVA_HOME/bin:$PATH
   4. Save the file and run source ~/.bashrc or source ~/.zshrc to apply changes.
 
-4. Install Maven (Required for backend development):
+# 4. Install Maven (Required for backend development):
 
 **Windows:**
 1. Check if Maven is already installed: `mvn --version`
@@ -93,13 +93,13 @@ or Run PowerShell as Administrator: choco install temurin21 -y
    ```
 3. Verify installation: `mvn --version`
 
-5. Install VS Code extensions for Java/Maven/Kotlin:
+# 5. Install VS Code extensions for Java/Maven/Kotlin:
 
 - "Extension Pack for Java" by Microsoft (includes Maven support)
 - "Language Support for Java(TM)" by Red Hat for build tool integration
 - "Kotlin" extension by fwcd
 
-6. Install Docker:
+# 6. Install Docker:
 
 - Windows:
   1. Download Docker Desktop from: https://www.docker.com/products/docker-desktop/
@@ -115,7 +115,7 @@ or Run PowerShell as Administrator: choco install temurin21 -y
   4. Complete the initial setup when Docker Desktop launches.
   5. Verify installation by opening terminal and running: docker --version
 
-7. Install Python:
+# 7. Install Python:
 
 Download Python 3.11 or later from: https://www.python.org/downloads/
 
@@ -130,32 +130,42 @@ Download Python 3.11 or later from: https://www.python.org/downloads/
   2. Linux: Use package manager: sudo apt install python3.11 python3-pip (Ubuntu/Debian)
   3. Verify installation: python3 --version
 
-8. Install VS Code extension for Python:
+# 8. Install VS Code extension for Python:
 
 - "Python" extension by Microsoft
 
-9. Install Node.js for React/TypeScript with Vite:
+# 9. Install Node.js for React/TypeScript with Vite:
 
 Download Node.js LTS from: https://nodejs.org/
 
 - Verify installation: node --version && npm --version
 
-10. Install VS Code extensions for JavaScript/TypeScript:
+# 10. Install VS Code extensions for JavaScript/TypeScript:
 
 - "ESLint" for JavaScript/TypeScript linting
 - "Prettier" for code formatting
 
-11. Install UV (Python package manager and version controller):
+# 11. Install UV (Python package manager and version controller):
 
 - Windows:
   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
 - macOS/Linux:
-  curl -LsSf https://astral.sh/uv/install.sh | sh
+  ```bash
+  curl -LsSf https://astral.sh/uv/install.sh | bash
+  ```
 
-- Verify installation: uv --version
+- Verify installation: 
+  ```bash
+  uv --version
+  ```
+  
+  **Note:** If `uv --version` returns "command not found", restart your terminal or run:
+  ```bash
+  source ~/.bashrc  # or source ~/.zshrc for zsh
+  ```
 
-12. Create new Kotlin Maven project (if you need a new one):
+# 12. Create new Kotlin Maven project (if you need a new one):
 
 Open VS Code Command Palette (Ctrl+Shift+P)
 Type: "Maven: Create Maven Project"
@@ -164,12 +174,12 @@ Type: "Maven: Create Maven Project"
 - Choose "org.jetbrains.kotlin:kotlin-maven-archetype"
 - Follow prompts to set Group Id, Artifact Id, Version, Package, and Project Location.
 
-13. Build and run (from VS Code):
+# 13. Build and run (from VS Code):
 
 - Use Maven sidebar in VS Code
 - OR terminal: mvn clean compile (uses VS Code's built-in Maven)
 
-14. ESLint and Prettier setup for React/TypeScript (if needed):
+# 14. ESLint and Prettier setup for React/TypeScript (if needed):
 - Initialize ESLint in your project:
   - npx eslint --init
 - Configure Prettier settings in VS Code settings.json:
@@ -185,7 +195,7 @@ Type: "Maven: Create Maven Project"
   }
   ```
 
-15. Additional Code Quality Tools (optional):
+# 15. Additional Code Quality Tools (optional):
 
 **For Kotlin/Java:**
 - Install "SonarLint" extension in VS Code for code quality checks
@@ -203,4 +213,4 @@ Type: "Maven: Create Maven Project"
   }
   ```
 
-16. Turn on additional features and models in Copilot !
+# 16. Turn on additional features and models in Copilot !
