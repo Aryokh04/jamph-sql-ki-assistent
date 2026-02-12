@@ -80,6 +80,7 @@ Jamph-Ollama/
 MLFlow/
 reops-ollama/
 
+Jamph-MLflow/
 # Root-level frontend directory (legacy)
 frontend/
 
