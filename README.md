@@ -1,18 +1,12 @@
 # JAMPH-sql-ki-assistent
 
+Dette er ment som en installasjonsmappe. Vår assistent er komponenbasert.
+
 Bruker en AI modell og arkitektur til å skrive BigQuery spørringer. Forenkler prosessen med å skrive personlig statstikker.
 
 ## Komme i gang
 
-#### Frontend:
-Dette er main repository. Eksterne projekter lastes ned i modules mappen. Se installasjonskript for dette.
-
-Det er satt opp slik at en kan ha backend mappen inne i denne filen som en sub modul ved.
-
-#### Backend:
-Dette er et eget repository og har også sin egen modules mappe.
-
----
+Filen README_install.MD inneholder instruksjoner for å sette opp miljøet.
 
 ## Henvendelser
 

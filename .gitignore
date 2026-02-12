@@ -4,9 +4,6 @@ venv/
 env/
 ENV/
 
-# llama.cpp directory
-llama.cpp/
-
 # API keys and secrets
 *.env
 !/example.apikey.env
@@ -65,28 +62,18 @@ div/
 
 
 # Component based project structure
-
-## Reference projects for context
-Start-Umami-Student/
-Metabase/
-## Out project and related components
+## Our project and related components
 Jamph-Umami-Frontend/
 Jamph-Rag-Api-Umami/
-# Trains and keeps model history with MLFlow.
 Jamph-ML-Trainer/
-# For rag and potentially more ai related.
-Jamph-DB/
+Jamph-Postgress/
 Jamph-Ollama/
-MLFlow/
-reops-ollama/
-
 Jamph-MLflow/
-# Root-level frontend directory (legacy)
-frontend/
 
 
-backend/
-
-frontend/modules/*
-!frontend/modules/README_install.MD
-
+## Reference projects for context
+umami-start-student/
+Metabase/
+reops-ollama/
+MLFlow/
+llama.cpp/

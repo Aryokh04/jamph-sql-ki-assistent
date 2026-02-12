@@ -1,168 +1,26 @@
 # This readme forms the basis of creating a one click installer for our KI assistant system. Please report any issues or missing steps.
 
-# Frontend Installation Instructions
-
-## Jamph-Umami-Frontend (Our version of Start-Umami-Student edition)
-   git clone https://github.com/PerErikGronvik/Jamph-Umami-Frontend Jamph-Umami-Frontend
-   - Paste the file `fagtorsdag-prod-81a6-52ac69097f46.json` into the `Jamph-Umami-Frontend` folder. Keep the file secret, do not share it.
-
-**Install and start**:
-   cd Jamph-Umami-Frontend
-   npm install (If first time)
-   npm run start
-   Click the link to continue
-   
-   Note: To restart the server, press `Ctrl+C` to stop it, then run `npm run start` again.
-
-## Jamph-Rag-Api-Umami (Backend RAG API)
-
-This is our backend API for the KI assistant. It is called from the frontend and talks to Ollama and the database to assemble the RAG (Retrieval-Augmented Generation) system.
-
-**Note:** This is a Java/Kotlin backend using Maven, not Python.
-
-**Clone the repository**:
-
-**Windows (PowerShell):**
-   ```powershell
-   git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend Jamph-Rag-Api-Umami
-   ```
-
-
-**MacOS/Linux**:
-
-   ```bash
-   git clone https://github.com/PerErikGronvik/JAMPH-SQL-ki-assistent-backend Jamph-Rag-Api-Umami
-   ```
-
-
-**Prerequisites**:
-   - JDK 21 (see Development setup.md step 3)
-   - Maven (see Development setup.md step 4)
-   - Docker Desktop running (for Ollama and PostgreSQL dependencies)
-
-**Setup and run the API**:
-
-**Windows (PowerShell):**
-   ```powershell
-   cd Jamph-Rag-Api-Umami/api
-   
-   # Set up environment variables (if needed)
-   # copy example.env .env
-   # Edit .env file with your configuration
-   
-   # Start dependencies (Ollama and Database) from project root
-   cd ../..
-   docker compose up jamph-ollama jamph-db -d
-   
-   # Return to API directory
-   cd Jamph-Rag-Api-Umami/api
-   
-   # Build the project
-   mvn clean install
-   
-   # Run the application
-   mvn spring-boot:run
-   # Or run the JAR file directly:
-   # java -jar target/sql-ki-assistent-*.jar
-   ```
-
-**macOS/Linux:**
-   ```bash
-   cd Jamph-Rag-Api-Umami/api
-   
-   # Set up environment variables
-   cp example.env .env
-   # Edit .env file with your configuration (use nano, vim, or VS Code)
-   
-   # Start dependencies (Ollama and Database) from project root
-   cd ../..
-   docker compose up jamph-ollama jamph-db -d
-   
-   # Return to API directory
-   cd Jamph-Rag-Api-Umami/api
-   
-   # Build the project
-   mvn clean install
-   
-   # Run the application
-   mvn spring-boot:run
-   # Or run the JAR file directly:
-   # java -jar target/sql-ki-assistent-*.jar
-   ```
-
-**Environment variables** (configure via application.properties or environment):
-   - `OLLAMA_HOST=http://localhost:11434`
-   - `DB_HOST=localhost`
-   - `DB_PORT=8002`
-   - `DB_NAME=jamph_db`
-   - `DB_USER=jamph`
-   - `DB_PASSWORD=jamph_password`
-   - `MLFLOW_TRACKING_URI=https://mlflow.vishvadukan.no`
-
-**Verify installation**:
-   - API should be running at http://localhost:8004
-   - Check API health endpoint: http://localhost:8004/health (if available)
-   - Check logs for any connection errors to Ollama or database
-
-**Using Docker Compose** (alternative):
-   ```bash
-   # From project root
-   docker compose up jamph-rag-api-umami -d
-   ```
-   Note: This will also start all dependencies (Ollama, database, MLFlow)
-
-**To restart the API**:
-   - Press `Ctrl+C` to stop the server in the terminal
-   - Run `mvn spring-boot:run` again from the `Jamph-Rag-Api-Umami/api` directory
-
-
-# Setup Instructions
-
-# Module Installation Instructions
-
-## Training Pipeline Module
-   git clone https://github.com/PerErikGronvik/Jamph-ML-Trainer Jamph-ML-Trainer
-
-
-
-## Jamph-MLflow:
-
-**Windows (PowerShell):**
-   ```powershell
+# List of all repositories to clone for full setup:
+   git clone https://github.com/PerErikGronvik/Jamph-Umami-Frontend 
+   git clone https://github.com/PerErikGronvik/Jamph-Rag-Api-Umami.git
+   git clone https://github.com/PerErikGronvik/Jamph-ML-Trainer
    git clone https://github.com/Mobin1738/Jamph-MLFlow Jamph-MLflow
-   ```
+# Not up yet
+   git clone https://github.com/PerErikGronvik/Jamph-ML-Ollama
+# For inspiration originals etc.
+   git clone https://github.com/navikt/reops-ollama.git reops-ollama
+      git clone https://github.com/eilifjohansen/umami-start-student #see instructions below
+      #metabase see below.
 
-**macOS/Linux:**
-   ```bash
-   git clone https://github.com/Mobin1738/Jamph-MLFlow Jamph-MLflow
-   ```
+# Tidligere instruksjoner er stort sett flyttet til mappen som den gjelder.
 
-**Next steps**:
-   - Open [Jamph-MLflow/README.md](Jamph-MLflow/README.md) for repo-specific setup details
+#Service ports overview for local development:
+- Jamph-Ollama: http://localhost:11434
+- MLFlow: http://localhost:5001
+- Jamph-Postgress: http://localhost:8002
+- Jamph-Rag-Api-Umami: http://localhost:8004 (Not implemented)
+- Jamph-ML-Trainer: http://localhost:8003 (Not implemented)
 
-**MLFlow is hosted centrally** - you don't need to install it locally. 
-
-### Accessing MLFlow
-
-**Authentication Required:**
-   - MLFlow is protected with basic authentication
-   - Get credentials from `mlflow.env` sent on email (keep secret!)
-
-**Web Interface:**
-   - Open in browser: https://mlflow.vishvadukan.no
-   - Login with username and password from `mlflow.env`
-   - View experiments, models, and metrics
-  
-
-**For local testing only** (optional):
-   - Run MLFlow via Docker: `docker compose --profile mlflow up -d`
-   - Access at http://localhost:5001
-   - Note: Local instance won't share data with the team
-
-**For Nav production deployment**:
-   - Deploy MLFlow to Nav's internal infrastructure
-   - Update `MLFLOW_TRACKING_URI` environment variable to point to Nav's server
-   - All code remains the same - only the connection string changes
 
 ## Jamph-DB Setup (PostgreSQL Database)
 
@@ -190,44 +48,11 @@ This is our backend API for the KI assistant. It is called from the frontend and
 
 ## Nav internal Ollama repo
 
-git clone https://github.com/navikt/reops-ollama.git reops-ollama
-
-## Docker Compose Services **in progress**
-
-**Start all services**:
-   docker compose --profile all up -d
-
-**Start individual services**:
-   docker compose --profile mlflow up -d
-
-   docker compose --profile ollama up -d
-
-   docker compose --profile jamph-rag-api-umami up -d
-   
-   docker compose --profile jamph-db up -d
-
-   docker compose --profile jamph-ml-trainer up -d
-
-**Service ports overview**:
-
-- Jamph-Ollama: http://localhost:11434
-- MLFlow: http://localhost:5001
-- Jamph-DB: http://localhost:8002
-- Jamph-Rag-Api-Umami: http://localhost:8004 (Not implemented)
-- Jamph-ML-Trainer: http://localhost:8003 (Not implemented)
-
-
-**Stop services**:
-   docker compose down
-
-   Note: To restart services, use `docker compose restart` or stop and start specific profiles.
 
 
 
-# To install optional modules or repositories
 
-Instructions for installing optional modules or repositories.
-
+# Start-Umami-Student and Metabase Modules
 ## A Backup of the original - Start-Umami-Student Module (To download UMAMI Student edition and run it locally)
 **This is the original for reference**
    git clone https://github.com/eilifjohansen/umami-start-student Start-Umami-Student
