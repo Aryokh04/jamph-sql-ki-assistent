@@ -5,12 +5,13 @@
    git clone https://github.com/PerErikGronvik/Jamph-Rag-Api-Umami.git
    git clone https://github.com/PerErikGronvik/Jamph-ML-Trainer
    git clone https://github.com/Mobin1738/Jamph-MLFlow Jamph-MLflow
+   git clone https://github.com/PerErikGronvik/Jamph-Ollama
 # Not up yet
-   git clone https://github.com/PerErikGronvik/Jamph-ML-Ollama
+   git clone https://github.com/PerErikGronvik/Jamph-Postgres
 # For inspiration originals etc.
    git clone https://github.com/navikt/reops-ollama.git reops-ollama
-      git clone https://github.com/eilifjohansen/umami-start-student #see instructions below
-      #metabase see below.
+   git clone https://github.com/eilifjohansen/umami-start-student #see instructions below
+   #metabase see below.
 
 # Tidligere instruksjoner er stort sett flyttet til mappen som den gjelder.
 
