@@ -4,7 +4,7 @@
    git clone https://github.com/PerErikGronvik/Jamph-Umami-Frontend 
    git clone https://github.com/PerErikGronvik/Jamph-Rag-Api-Umami.git
    git clone https://github.com/PerErikGronvik/Jamph-ML-Trainer
-   git clone https://github.com/Mobin1738/Jamph-MLFlow Jamph-MLflow
+   git clone https://github.com/Mobin1738/Jamph-MLFlow
    git clone https://github.com/PerErikGronvik/Jamph-Ollama
 # Not up yet
    git clone https://github.com/PerErikGronvik/Jamph-Postgres
@@ -12,6 +12,15 @@
    git clone https://github.com/navikt/reops-ollama.git reops-ollama
    git clone https://github.com/eilifjohansen/umami-start-student #see instructions below
    #metabase see below.
+
+# Api linker på NAIS
+
+- **Jamph Frontend**: https://jamph-umami-frontend.researchops.nav.no
+- **Jamph RAG API**: https://jamph-rag-api-umami.researchops.nav.no
+- **Jamph Ollama**: https://jamph-ollama.researchops.nav.no
+- **MLFlow**: https://jamph-mlflow.researchops.nav.no
+- **PostgreSQL**: Ikke påbegynt
+
 
 # Tidligere instruksjoner er stort sett flyttet til mappen som den gjelder.
 
