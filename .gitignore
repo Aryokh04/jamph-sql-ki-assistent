@@ -1,3 +1,7 @@
+# All sub folders except the .github folder. Leaves root folder alone.
+*/
+!.github/
+
 # Virtual environments
 .venv/
 venv/
