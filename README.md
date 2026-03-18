@@ -16,6 +16,17 @@ Spørsmål knyttet til koden eller repositoryet kan stilles som issues her på G
 Eller:
 Spørsmål knyttet til koden eller repositoryet kan stilles til teamalias@nav.no (som evt må opprettes av noen™ Windows-mennesker) eller som issues her på GitHub (stryk det som ikke passer).
 
+## Endringslogg
+
+### 2026-03-18 — Tjenestekommunikasjon koblet opp mot NAIS-miljø
+
+Tidligere hardkodet alle tjenester mot `localhost`. Nå brukes miljøvariabler og NAIS-konfigurasjon:
+
+- **Frontend** bruker `VITE_RAG_API_URL` (satt i `.env` / `.env.production`) i stedet for hardkodet `localhost:8004`
+- **RAG API** får `OLLAMA_BASE_URL=http://jamph-ollama` via NAIS env, slik at den snakker med Ollama internt i clusteret
+- **NAIS accessPolicy** er oppdatert med `outbound`-regler fra RAG → Ollama i begge miljøer
+- **Ollama prod**-applikasjonen er omdøpt fra `reops-ollama` til `jamph-ollama` for å samsvare med dev og øvrige referanser
+
 ### For Nav-ansatte
 
 Interne henvendelser kan sendes via Slack i kanalen #teamkanal.(teamreasarchobs)

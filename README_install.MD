@@ -15,9 +15,9 @@
 
 # Api linker på NAIS
 
-- **Jamph Frontend**: https://jamph-umami-frontend.researchops.nav.no
-- **Jamph RAG API**: https://jamph-rag-api-umami.researchops.nav.no
-- **Jamph Ollama**: https://jamph-ollama.researchops.nav.no
+- **Jamph Frontend**: https://jamph.ekstern.dev.nav.no/
+- **Jamph RAG API**: https://jamph-rag-api-umami.ekstern.dev.nav.no/ 
+- **Jamph Ollama**: https://jamph-ollama.ekstern.dev.nav.no/
 - **MLFlow**: https://jamph-mlflow.researchops.nav.no
 - **PostgreSQL**: Ikke påbegynt
 
