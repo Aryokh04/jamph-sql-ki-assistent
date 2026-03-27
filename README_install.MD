@@ -1,30 +1,39 @@
-# This readme forms the basis of creating a one click installer for our KI assistant system. Please report any issues or missing steps.
+## This readme forms the basis of creating a one click installer for our KI assistant system. Please report any issues or missing steps. After the project is finsished expect this readme to change to be a full local install. to show of your work.
 
-# List of all repositories to clone for full setup:
+#Linker
+## List of all repositories to clone for full setup:
+   git clone https://github.com/navikt/Jamph-Umami-Frontend.git
+   git clone https://github.com/navikt/Reops-Jamph-Rag-Api-Umami.git
+   git clone https://github.com/navikt/Reops-Jamph-Ollama.git
+## Depricated, old local versions, will be relevant again after bcs is done.
    git clone https://github.com/PerErikGronvik/Jamph-Umami-Frontend 
    git clone https://github.com/PerErikGronvik/Jamph-Rag-Api-Umami.git
-   git clone https://github.com/PerErikGronvik/Jamph-ML-Trainer
-   git clone https://github.com/Mobin1738/Jamph-MLFlow
    git clone https://github.com/PerErikGronvik/Jamph-Ollama
-# Not up yet
+## List of optional repositories
+   git clone https://github.com/PerErikGronvik/Jamph-ML-Trainer
+## only if time for it repositories that is cut from the project scope but could be interesting for the future:
+   git clone https://github.com/Mobin1738/Jamph-MLFlow
    git clone https://github.com/PerErikGronvik/Jamph-Postgres
-# For inspiration originals etc.
+## For inspiration originals etc.
    git clone https://github.com/navikt/reops-ollama.git reops-ollama
    git clone https://github.com/eilifjohansen/umami-start-student #see instructions below
    #metabase see below.
 
-# Api linker på NAIS
+# API CALLS
+## Api linker på NAIS. her når du tjenestene som er i produksjon på NAIS. 
 
 - **Jamph Frontend**: https://jamph.ekstern.dev.nav.no/
 - **Jamph RAG API**: https://jamph-rag-api-umami.ekstern.dev.nav.no/ 
 - **Jamph Ollama**: https://jamph-ollama.ekstern.dev.nav.no/
+
+## ikke aktuelle
 - **MLFlow**: https://jamph-mlflow.researchops.nav.no
 - **PostgreSQL**: Ikke påbegynt
 
 
-# Tidligere instruksjoner er stort sett flyttet til mappen som den gjelder.
+# Disse instruksjonene vil bli relevante etter bcs slutt. ignorer.
 
-#Service ports overview for local development:
+## Service ports overview for local development:
 - Jamph-Ollama: http://localhost:11434
 - MLFlow: http://localhost:5001
 - Jamph-Postgress: http://localhost:8002
@@ -32,35 +41,8 @@
 - Jamph-ML-Trainer: http://localhost:8003 (Not implemented)
 
 
-## Jamph-DB Setup (PostgreSQL Database)
 
-**Jamph-DB is hosted centrally** - you don't need to install PostgreSQL locally.
-
-**Development environment**: Connect to the shared database server
-   - Set environment variables:
-     - `DB_HOST=<server-address>`
-     - `DB_PORT=5432`
-     - `DB_NAME=jamph_db`
-     - `DB_USER=jamph`
-     - `DB_PASSWORD=<password>`
-   - All team members connect to the same database instance to share data
-
-**For local testing only** (optional):
-   - Run PostgreSQL via Docker: `docker compose --profile jamph-db up -d`
-   - Access at localhost:8002 (mapped to PostgreSQL port 5432)
-   - Note: Local instance won't share data with the team
-
-**For Nav production deployment**:
-   - Deploy PostgreSQL to Nav's internal infrastructure
-   - Update database environment variables to point to Nav's server
-   - All code remains the same - only the connection details change
-
-
-## Nav internal Ollama repo
-
-
-
-
+# Dette er for nyskjerrige sjeler
 
 # Start-Umami-Student and Metabase Modules
 ## A Backup of the original - Start-Umami-Student Module (To download UMAMI Student edition and run it locally)
