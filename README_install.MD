@@ -2,42 +2,42 @@
 
 #Linker
 ## List of all repositories to clone for full setup:
-   git clone https://github.com/navikt/Jamph-Umami-Frontend.git
-   git clone https://github.com/navikt/Reops-Jamph-Rag-Api-Umami.git
+   git clone https://github.com/navikt/Jamph-Umami-Frontend.git <br>
+   git clone https://github.com/navikt/Reops-Jamph-Rag-Api-Umami.git<br>
    git clone https://github.com/navikt/Reops-Jamph-Ollama.git
 ## Depricated, old local versions, will be relevant again after bcs is done.
-   git clone https://github.com/PerErikGronvik/Jamph-Umami-Frontend 
-   git clone https://github.com/PerErikGronvik/Jamph-Rag-Api-Umami.git
+   git clone https://github.com/PerErikGronvik/Jamph-Umami-Frontend <br>
+   git clone https://github.com/PerErikGronvik/Jamph-Rag-Api-Umami.git <br>
    git clone https://github.com/PerErikGronvik/Jamph-Ollama
 ## List of optional repositories
    git clone https://github.com/PerErikGronvik/Jamph-ML-Trainer
 ## only if time for it repositories that is cut from the project scope but could be interesting for the future:
-   git clone https://github.com/Mobin1738/Jamph-MLFlow
+   git clone https://github.com/Mobin1738/Jamph-MLFlow <br>
    git clone https://github.com/PerErikGronvik/Jamph-Postgres
 ## For inspiration originals etc.
-   git clone https://github.com/navikt/reops-ollama.git reops-ollama
+   git clone https://github.com/navikt/reops-ollama.git reops-ollama <br>
    git clone https://github.com/eilifjohansen/umami-start-student #see instructions below
    #metabase see below.
 
 # API CALLS
 ## Api linker på NAIS. her når du tjenestene som er i produksjon på NAIS. 
 
-- **Jamph Frontend**: https://jamph.ekstern.dev.nav.no/
-- **Jamph RAG API**: https://jamph-rag-api-umami.ekstern.dev.nav.no/ 
+- **Jamph Frontend**: https://jamph.ekstern.dev.nav.no/ <br>
+- **Jamph RAG API**: https://jamph-rag-api-umami.ekstern.dev.nav.no/  <br>
 - **Jamph Ollama**: https://jamph-ollama.ekstern.dev.nav.no/
 
 ## ikke aktuelle
-- **MLFlow**: https://jamph-mlflow.researchops.nav.no
+- **MLFlow**: https://jamph-mlflow.researchops.nav.no <br>
 - **PostgreSQL**: Ikke påbegynt
 
 
 # Disse instruksjonene vil bli relevante etter bcs slutt. ignorer.
 
 ## Service ports overview for local development:
-- Jamph-Ollama: http://localhost:11434
-- MLFlow: http://localhost:5001
-- Jamph-Postgress: http://localhost:8002
-- Jamph-Rag-Api-Umami: http://localhost:8004 (Not implemented)
+- Jamph-Ollama: http://localhost:11434 <br>
+- MLFlow: http://localhost:5001 <br>
+- Jamph-Postgress: http://localhost:8002 <br>
+- Jamph-Rag-Api-Umami: http://localhost:8004 (Not implemented) <br>
 - Jamph-ML-Trainer: http://localhost:8003 (Not implemented)
 
 
@@ -47,7 +47,7 @@
 # Start-Umami-Student and Metabase Modules
 ## A Backup of the original - Start-Umami-Student Module (To download UMAMI Student edition and run it locally)
 **This is the original for reference**
-   git clone https://github.com/eilifjohansen/umami-start-student Start-Umami-Student
+   git clone https://github.com/eilifjohansen/umami-start-student Start-Umami-Student_original <br>
    - Paste the file `fagtorsdag-prod-81a6-52ac69097f46.json` into the `Start-Umami-Student` folder. Keep the file secret, do not share it.
 
 **Install and start**:
