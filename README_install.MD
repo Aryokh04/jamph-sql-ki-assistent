@@ -6,9 +6,9 @@
    git clone https://github.com/navikt/Reops-Jamph-Rag-Api-Umami.git<br>
    git clone https://github.com/navikt/Reops-Jamph-Ollama.git
 ## Depricated, old local versions, will be relevant again after bcs is done.
-   git clone https://github.com/PerErikGronvik/Jamph-Umami-Frontend <br>
-   git clone https://github.com/PerErikGronvik/Jamph-Rag-Api-Umami.git <br>
-   git clone https://github.com/PerErikGronvik/Jamph-Ollama
+   git clone https://github.com/PerErikGronvik/Jamph-Umami-Frontend gammel_frontend <br>
+   git clone https://github.com/PerErikGronvik/Jamph-Rag-Api-Umami.git gammel_rag_api <br>
+   git clone https://github.com/PerErikGronvik/Jamph-Ollama gammel_ollama
 ## List of optional repositories
    git clone https://github.com/PerErikGronvik/Jamph-ML-Trainer
 ## only if time for it repositories that is cut from the project scope but could be interesting for the future:
