@@ -141,6 +141,44 @@ data class QueryTypeResult(
 )
 ```
 
+#### `SQLRequest`
+HTTP-forespørsel til `POST /api/sql`. Definert i `Application.kt`.
+```kotlin
+data class SQLRequest(
+    val query: String,
+    val url: String? = null,
+    val model: String? = null,
+    val pathOperator: String? = null,  // "starts-with" | "exact" | null
+    val debug: Boolean? = null
+)
+```
+
+#### `SQLResponse`
+HTTP-svar fra `POST /api/sql`. Definert i `Application.kt`.
+```kotlin
+data class SQLResponse(
+    val sql: String,
+    val debugInfo: Map<String, String?>? = null
+    // debugInfo-nøkler: queryType, siteId, urlPath,
+    //                   extractedVariables, rawClassificationResponse
+)
+```
+
+#### `ErrorResponse`
+Feilsvar fra API-et. Definert i `Application.kt`.
+```kotlin
+data class ErrorResponse(val error: String)
+```
+
+#### `BenchmarkRequest`
+HTTP-forespørsel til `POST /api/benchmark`. Definert i `Application.kt`.
+```kotlin
+data class BenchmarkRequest(
+    val model: String? = null,
+    val ollamaBaseUrl: String? = null
+)
+```
+
 #### `SqlGenerationResult`
 Fullstendig utdata fra RagV2-pipeline.
 ```kotlin
@@ -155,10 +193,11 @@ data class SqlGenerationResult(
 ```
 
 #### `ModelBenchmarkResult`
-Benchmarkingsresultat per LLM-modell.
+Benchmarkingsresultat per LLM-modell. Definert i `ModellBenchmarkRunner2.kt`.
 ```kotlin
 data class ModelBenchmarkResult(
     val model: String,
+    val timestamp: String,
     val sqlAccuracy: Double,        // 0.0–1.0
     val dialectAccuracy: Double,    // 0.0–1.0
     val averageCostMB: Double,
@@ -176,24 +215,33 @@ data class ModelBenchmarkResult(
 
 ### 3.3 Frontend-datastrukturer (TypeScript)
 
-#### `DashboardWidgetDefinition`
+#### `DashboardWidgetType`, `DashboardWidgetSize`, `DashboardWidgetDefinition`
+Definert i `src/components/dashboardjson/model/widgetType.ts`.
 ```typescript
-interface DashboardWidgetDefinition {
+export type DashboardWidgetType =
+    | 'table' | 'regresjon' | 'linechart' | 'areachart' | 'barchart'
+    | 'piechart' | 'statcards' | 'stegvisning' | 'kiforklaring'
+    | 'pageflow' | 'metrics';
+
+export interface DashboardWidgetSize {
+    cols: number;
+    rows: number;
+}
+
+export interface DashboardWidgetDefinition {
     id: string;
     title: string;
-    chartType: DashboardWidgetType;
+    chartType: string;          // løst typet; valideres til DashboardWidgetType ved kjøring
     sql: string;
     aiPrompt?: string;
-    size: { cols: number; rows: number };
+    size: DashboardWidgetSize;
 }
-```
 
-#### `DashboardWidgetType`
-```typescript
-type DashboardWidgetType =
-    | 'table' | 'linechart' | 'areachart' | 'barchart'
-    | 'piechart' | 'statcards' | 'regresjon'
-    | 'stegvisning' | 'kiforklaring' | 'pageflow' | 'metrics';
+// Utvidet versjon med faktisk resultat (returnert av useDashboardWidgetResolver):
+export interface DashboardWidgetResolved extends DashboardWidgetDefinition {
+    chartType: DashboardWidgetType;
+    result: { success: boolean; data: unknown[]; rowCount: number };
+}
 ```
 
 ---
@@ -252,16 +300,24 @@ I produksjon bygges Vite-appen til statiske filer som Express-serveren serverer 
 
 Applikasjonen benytter React Router v7. Alle ruter er definert i `src/routes.tsx`. Se Tabell 1 for fullstendig ruteoversikt.
 
-*Tabell 1: Ruteoversikt i Jamph-Umami-Frontend*
+*Tabell 1: Ruteoversikt i Jamph-Umami-Frontend (alle ruter definert i `src/routes.tsx`)*
 
 | Sti | Komponent | Formål |
 |-----|-----------|--------|
 | `/` | `Home` | Forside |
 | `/ki-assistent` | `KunstigInteligensBygger` | Hoved-KI-dashbord |
+| `/kunstig-intelligens-bygger` | `KunstigInteligensBygger` | Alias for `/ki-assistent` |
+| `/ki-bygger` | `KiBygger` | Alternativ KI-bygger |
 | `/grafbygger` | `Charts` | Manuell grafbygger |
 | `/sql` | `SqlEditor` | Direkte SQL-editor |
+| `/ai-bygger` | `AiBygger` | AI-bygger (bare layout) |
+| `/ai-builder` | `AiChartBuilder` | AI-grafbygger (ny versjon) |
+| `/prototype3` | `Prototype3` | Prototype 3 |
+| `/prototype4` | `Prototype4` | Prototype 4 |
 | `/dashboards` | `DashboardOverview` | Dashbordoversikt |
 | `/dashboard` | `Dashboard` | Enkelt dashbord |
+| `/grafdeling` | `Grafdeling` | Del graf/widget |
+| `/widget` | `WidgetVisning` | Innebyggbar widget (bare layout) |
 | `/brukerreiser` | `UserJourney` | Brukerreiseanalyse |
 | `/hendelsesreiser` | `EventJourney` | Hendelsesreiser |
 | `/trafikkanalyse` | `TrafficAnalysis` | Trafikkanalyse |
@@ -270,13 +326,18 @@ Applikasjonen benytter React Router v7. Alle ruter er definert i `src/routes.tsx
 | `/brukersammensetning` | `UserComposition` | Brukersammensetning |
 | `/brukerprofiler` | `UserProfiles` | Brukerprofiler |
 | `/utforsk-hendelser` | `EventExplorer` | Hendelsesutforsker |
+| `/datastruktur` | `EventExplorer` | Alias for `/utforsk-hendelser` |
 | `/trakt` | `Funnel` | Traktanalyse |
 | `/personvernssjekk` | `PrivacyCheck` | Personvernsjekk |
 | `/diagnose` | `Diagnosis` | Systemdiagnose |
-| `/widget` | `WidgetVisning` | Innebyggbar widget (bare layout) |
+| `/profil` | `UserProfile` | Brukerprofil |
+| `/testmodell` | `TestModell` | Testmodell-side |
 | `/komigang` | `Komigang` | Kom-i-gang-guide |
+| `/oppsett` | `Oppsett` | Oppsettsveiledning |
 | `/personvern` | `Personvern` | Personvernerklæring |
 | `/tilgjengelighet` | `Tilgjengelighet` | Tilgjengelighetserklæring |
+| `/taksonomi` | `Taksonomi` | Taksonomiartikkel |
+| `/metabase` | `MetabaseGuide` | Metabase-guide |
 
 #### Layoutsystem
 
@@ -297,13 +358,14 @@ Backend-API-et er skrevet i Kotlin med Ktor-rammeverket og Netty som HTTP-server
 
 | Metode | Sti | Beskrivelse |
 |--------|-----|-------------|
+| GET | `/` | Statusmelding – bekreftelse på at API kjører |
 | GET | `/health` | Helsesjekk – returnerer BigQuery-status |
 | GET | `/api/bigquery/websites` | Henter alle nettsteder fra BigQuery |
-| GET | `/api/bigquery/schema` | Returnerer tabellskjema |
-| POST | `/api/sql` | Naturlig språk → SQL (RagV2-pipeline) |
-| POST | `/api/sql/debug` | Som `/api/sql` med feilsøkingsinfo |
-| POST | `/api/chat` | Direktechat med Ollama |
-| POST | `/api/benchmark` | Kjør LLM-benchmark (synkront) |
+| GET | `/api/bigquery/schema` | Returnerer skjemakontekst som tekststreng |
+| GET | `/api/bigquery/tables/{tableName}` | Returnerer kolonnemetadata for én tabell |
+| POST | `/api/sql` | Naturlig språk → SQL (RagV2-pipeline, inkl. debug-info i svar) |
+| POST | `/api/chat` | ~~Direktechat~~ – fjernet, returnerer `501 Not Implemented` |
+| POST | `/api/benchmark` | Kjør LLM-benchmark (synkront, returnerer ett resultat) |
 | POST | `/api/benchmark/stream` | Streaming benchmark via SSE |
 
 **Eksempel – POST `/api/sql`:**
@@ -474,11 +536,11 @@ HTTP-klient for kommunikasjon med Ollama-tjenesten.
 | Temperatur (SQL-generering) | 0.0 |
 | `repeat_penalty` | 1.01 |
 
-Klienten tilbyr tre metoder:
+Klienten tilbyr følgende metoder:
 - `generate(prompt)` – standard SQL-generering
 - `generateConstrained(prompt, temperature, maxTokens)` – begrenset generering for klassifisering
 - `generateRaw(prompt)` – returnerer rå JSON (brukt av `TokenSpeedMeasurer`)
-- `fetchDefaultModel(baseUrl)` – henter første tilgjengelige Ollama-modell automatisk
+- `fetchDefaultModel(baseUrl)` *(companion object)* – henter første tilgjengelige Ollama-modell automatisk ved oppstart
 
 ---
 
@@ -769,6 +831,7 @@ Alle benchmarkingsresultater returneres som JSON via `/api/benchmark` og skrives
 ```json
 {
     "model": "qwen2.5-coder:7b",
+    "timestamp": "2025-05-14T10:00:00Z",
     "sqlAccuracy": 0.87,
     "dialectAccuracy": 0.79,
     "averageCostMB": 23.4,
