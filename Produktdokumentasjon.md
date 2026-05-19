@@ -17,6 +17,55 @@ Dokumentasjonen er også ment som underlag for sensor og veileder ved evaluering
 
 ---
 
+## Innholdsfortegnelse
+
+- [Forord](#forord)
+- [1. Beskrivelse av programmet](#1-beskrivelse-av-programmet)
+  - [1.1 Hensikt](#11-hensikt)
+  - [1.2 Hva systemet gjør – prinsipielt](#12-hva-systemet-gjør--prinsipielt)
+- [2. Samsvar mellom kravspesifikasjon og produkt](#2-samsvar-mellom-kravspesifikasjon-og-produkt)
+- [3. Sentrale datastrukturer](#3-sentrale-datastrukturer)
+  - [3.1 BigQuery-datamodell](#31-bigquery-datamodell)
+  - [3.2 Interne datastrukturer – Kotlin API](#32-interne-datastrukturer--kotlin-api)
+  - [3.3 Frontend-datastrukturer (TypeScript)](#33-frontend-datastrukturer-typescript)
+- [4. Programmets oppbygging og virkemåte](#4-programmets-oppbygging-og-virkemåte)
+  - [4.1 Tjeneste 1 – Jamph-Umami-Frontend](#41-tjeneste-1--jamph-umami-frontend)
+  - [4.2 Tjeneste 2 – Reops-Jamph-Rag-Api-Umami](#42-tjeneste-2--reops-jamph-rag-api-umami)
+  - [4.3 Tjeneste 3 – Reops-Jamph-Ollama](#43-tjeneste-3--reops-jamph-ollama)
+- [5. Hovedprogram og underprogrammer](#5-hovedprogram-og-underprogrammer)
+  - **Backend – Reops-Jamph-Rag-Api-Umami**
+  - [5.1 RagV2 SQL-genereringspipeline](#51-ragv2-sql-genereringspipeline)
+  - [5.2 Forhåndsbygde SQL-maler (PrebuiltSchemas)](#52-forhåndsbygde-sql-maler-prebuiltschemas-backend)
+  - [5.3 URL-til-nettsted-oppslag](#53-url-til-nettsted-oppslag-bigqueryurltositeidandurlpath-backend)
+  - [5.4 OllamaClient](#54-ollamaclient-backend)
+  - [5.6 BigQuerySchemaService](#56-bigqueryschemaservice--skjemaoppslag-og-helsestatus-backend)
+  - **Frontend – Jamph-Umami-Frontend**
+  - [5.5 Frontendkomponenter – detaljert oversikt](#55-frontendkomponenter--detaljert-oversikt)
+  - [5.7 Batchet datahenting](#57-batchet-datahenting-batcheddashboardfetcherts-frontend)
+- [6. Funksjonelt grensesnitt (maskin- og programvare)](#6-funksjonelt-grensesnitt-maskin--og-programvare)
+  - [6.1 Maskinvarekrav](#61-maskinvarekrav)
+  - [6.2 Programvarekrav](#62-programvarekrav)
+  - [6.3 Miljøvariabler](#63-miljøvariabler)
+  - [6.4 Operativsystemstøtte](#64-operativsystemstøtte)
+  - [6.5 NAIS-plattform](#65-nais-plattform)
+- [7. Installasjon og drift](#7-installasjon-og-drift)
+  - [7.1 Lokal utvikling (uten Docker)](#71-lokal-utvikling-uten-docker)
+  - [7.2 Docker Compose (anbefalt for lokal testing)](#72-docker-compose-anbefalt-for-lokal-testing)
+  - [7.3 Produksjonsutrulling (NAIS)](#73-produksjonsutrulling-nais)
+- [8. Feilsøking](#8-feilsøking)
+- [9. Testdokumentasjon](#9-testdokumentasjon)
+  - [9.1 Teststrategi og overordnet mål](#91-teststrategioversikt)
+  - [9.2 SQL-korrekthetstesting (LlmSqlLogic)](#92-sql-korrekthetstesting-llmsqllogic)
+  - [9.3 Dialekt- og semantisk testing](#93-dialekt--og-semantisk-testing-dialectvalidetallmtosql)
+  - [9.4 SQL-syntaksvalidering (ValidateSqlQuery)](#94-sql-syntaksvalidering-validatesqlquery)
+  - [9.5 Ytelsesmåling](#95-ytelsesmåling-tokenspeedmeasurer-endtoendtimer)
+  - [9.6 Resultatformat – ModelBenchmarkResult](#96-resultatformat--modelbenchmarkresult)
+- [10. Sikkerhets- og personvernhensyn](#10-sikkerhets--og-personvernhensyn)
+- [Figurliste](#figurliste)
+- [Tabellliste](#tabellliste)
+
+---
+
 ## 1. Beskrivelse av programmet
 
 ### 1.1 Hensikt
@@ -41,18 +90,25 @@ Systemet tilbyr i tillegg en manuell grafbygger, SQL-editor, brukerreise-analyse
 
 | # | Krav | Status | Merknad |
 |---|------|--------|---------|
+| **Funksjonelle krav** | | | |
 | K1 | Naturlig-språk til SQL-konvertering | ✅ Implementert | RagV2-pipeline med 4 steg |
-| K2 | Støtte for norsk og engelsk inndata | ✅ Implementert | LLM håndterer begge språk; bekreftet i `DialectValidetaLlmToSql` |
+| K2 | Dialekt-støtte og engelsk inndata | ✅ Implementert | LLM håndterer norske dialekter og engelsk; bekreftet i `DialectValidetaLlmToSql` |
 | K3 | Visualisering av analyseresultater | ✅ Implementert | 11 widgettyper (linje, søyle, sektor, tabell, osv.) |
-| K4 | Integrasjon mot Google BigQuery | ✅ Implementert | `BigQueryQueryService` / `BigQuerySchemaService` |
-| K5 | Lokal LLM-kjøring (personvern) | ✅ Implementert | Ollama på NAIS, ingen data sendes ut av plattformen |
-| K6 | Dashbord med lagring av widgets | ✅ Implementert | `KunstigInteligensBygger.tsx`, `defaultWidgets.json` |
+| K4 | Kompatibelt med BigQuery-dialekt | ✅ Implementert | Genererer BigQuery-SQL; validert med JSQLParser + `BigQueryQueryService` |
+| K6 | Dashbord med lagring av widgets | ✅ Implementert | `EndeligKI.tsx`, `defaultWidgets.json` |
 | K7 | Kostnadsestimat for BigQuery-spørringer | ✅ Implementert | Dry-run via `/api/bigquery/estimate` |
-| K8 | Autentisering mot grensesnitt | ✅ Implementert | Basic Auth i `server.js` |
-| K9 | Containerisert utrulling | ✅ Implementert | Docker-bilder for alle tre tjenester |
 | K10 | LLM-modellbenchmarking | ✅ Implementert | `ModellBenchmarkRunner2.kt`, `/api/benchmark` |
 | K11 | Flerbruker-websitestøtte | ✅ Implementert | Nettsteder hentes fra `public_website`-tabellen |
+| K13 | Integrasjon med NAV sitt verktøy (Start Umami) | ✅ Implementert | Leser Umami Analytics-data fra BigQuery (`umami_student`); opprinnelig planlagt med Metabase, endret til Start Umami |
+| K14 | Korrekt mottak og tolkning av forespørsler | ✅ Implementert | 87 % SQL-nøyaktighet i benchmark (`LlmSqlLogic`); semantisk validering mot fasit i `DialectValidetaLlmToSql` |
+| K15 | Forståelig feilmelding ved SQL-generering | ✅ Implementert | Feilkoder 10000–10003 med beskrivende meldinger; vises i frontend via `error`-tilstand i `EndeligKI.tsx` |
+| **Ikke-funksjonelle krav** | | | |
+| K5 | Lokal LLM-kjøring (personvern) | ✅ Implementert | Ollama på NAIS, ingen data sendes ut av plattformen |
+| K8 | Autentisering mot grensesnitt | ✅ Implementert | Basic Auth i `server.js` |
+| K9 | Containerisert utrulling | ✅ Implementert | Docker-bilder for alle tre tjenester |
 | K12 | Sikkerhet: kun lesende SQL | ✅ Implementert | `ValidateSqlQuery.kt` blokkerer DML/DDL |
+| K16 | Responstid | ✅ Implementert | Flere BigQuery-spørringer kombineres til én (`batchedDashboardFetcher.ts`); GPU-akselerasjon reduserer LLM-responstid fra ~60s til ~3–8s; `TokenSpeedMeasurer` måler tokens/sek per modell |
+| K17 | Komponentbasert arkitektur | ✅ Implementert | Frontend er bygget som gjenbrukbare React-komponenter (`DashboardWidget`, `DashboardLayout`, `FilterBar`, `AiByggerPanel` m.fl.) på toppen av NAV Designsystem (`@navikt/ds-react`); Kotlin-backend følger samme prinsipp med separate tjenesteklasser |
 
 ---
 
@@ -248,42 +304,76 @@ export interface DashboardWidgetResolved extends DashboardWidgetDefinition {
 
 ## 4. Programmets oppbygging og virkemåte
 
-Systemet er delt inn i tre hovedtjenester som kjører som separate containere og kommuniserer over HTTP. Figur 1 viser den overordnede arkitekturen.
+Systemet er delt inn i tre hovedtjenester som kjører som separate containere og kommuniserer over HTTP. Figur 1 viser den overordnede arkitekturen med alle tre tjenester og deres kommunikasjonsflyt.
 
 ```
-┌──────────────────────────────────────────────────────────────────────┐
-│                          BRUKER (nettleser)                          │
-└───────────────────────────────┬──────────────────────────────────────┘
-                                │ HTTPS
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                          BRUKER (nettleser)                                  │
+│               Analytiker / ikke-teknisk bruker / driftsansvarlig             │
+└──────────────────────────────────┬───────────────────────────────────────────┘
+                                   │  HTTPS (port 443)
+                                   ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                  TJENESTE 1 – Jamph-Umami-Frontend                           │
+│                                                                              │
+│  ┌─────────────────────────────────┐  ┌──────────────────────────────────┐   │
+│  │          React SPA              │  │    Node.js / Express BFF         │   │
+│  │  Vite · TypeScript · Tailwind   │  │          server.js               │   │
+│  │  @navikt/ds-react               │  │                                  │   │
+│  │                                 │  │  ● Serverer statiske filer       │   │
+│  │  ● KiBygger / EndeligKI         │  │  ● Basic Auth-tilgangskontroll   │   │
+│  │  ● Dashboard-widgets (11 typer) │  │  ● Audit-logging (NAV-ident)     │   │
+│  │  ● Grafbygger / SQL-editor      │  │                                  │   │
+│  │  ● Brukerreise / Trafikkanalyse │  │  POST /api/bigquery              │   │
+│  │  ● Funnel / Retensjon / Profiler│  │  POST /api/bigquery/estimate     │   │
+│  └─────────────────────────────────┘  └─────────────────┬────────────────┘   │
+└───────────────────────┬──────────────────────────────── │ ──────────────────┘
+                        │                                 │
+             POST /api/sql                    SQL + service account
+           (naturlig språk +                              │
+            url + pathOperator)                           ▼
+                        │              ┌───────────────────────────────────────┐
+                        │              │           Google BigQuery             │
+                        │              │   Prosjekt: fagtorsdag-prod-81a6      │
+                        │              │   Datasett:  umami_student            │
+                        │              │   Region:    europe-north1            │
+                        │              │                                       │
+                        │              │   Tabeller:                           │
+                        │              │   ● event          (sidevisninger)    │
+                        │              │   ● session        (besøksøkter)      │
+                        │              │   ● public_website (nettsteder)       │
+                        │              └───────────────────────────────────────┘
+                        ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│              TJENESTE 2 – Reops-Jamph-Rag-Api-Umami                       │
+│                   Kotlin / Ktor / Netty – Port 8004                       │
+│                                                                           │
+│  Inngangsdata: { query, url, pathOperator, model?, debug? }               │
+│                                                                           │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │                       RagV2 SQL-pipeline                            │  │
+│  │  Steg 1 → Klassifiser spørsmålstype via Ollama (temp. 0.0)         │  │
+│  │  Steg 2 → Ekstraher variabler som JSON (Ollama)                    │  │
+│  │  Steg 3 → Konstruer SQL fra forhåndsbygd mal                       │  │
+│  │           ─── eller (ved type = default) ───                       │  │
+│  │  Steg 4 → Fri SQL-generering med fullt skjema (Ollama)             │  │
+│  └────────────────────────────┬────────────────────────────────────────┘  │
+│                               │  POST /api/generate                       │
+└───────────────────────────────┼───────────────────────────────────────────┘
+                                │
                                 ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│              Tjeneste 1: Jamph-Umami-Frontend                        │
-│          React SPA  +  Node.js/Express BFF (server.js)               │
-│                                                                      │
-│  • Serverer grensesnittet (Vite-bygg)                               │
-│  • /api/bigquery  →  kjører SQL mot BigQuery                         │
-│  • /api/bigquery/estimate  →  kostnadsestimat (dry-run)             │
-└──────────┬───────────────────────────────────────────────────────────┘
-           │ POST /api/sql          │ POST /api/bigquery (via server.js)
-           ▼                        ▼
-┌──────────────────────┐    ┌──────────────────────┐
-│  Tjeneste 2:         │    │  Google BigQuery      │
-│  Reops-Jamph-        │    │  fagtorsdag-prod-81a6 │
-│  Rag-Api-Umami       │    │  dataset: umami_student│
-│  (Kotlin/Ktor)       │    └──────────────────────┘
-│  Port 8004           │
-│                      │
-│  POST /api/generate  │
-│        │             │
-│        ▼             │
-│  Tjeneste 3:         │
-│  Reops-Jamph-Ollama  │
-│  (Ollama LLM)        │
-│  Port 11434          │
-└──────────────────────┘
+              ┌─────────────────────────────────────────┐
+              │   TJENESTE 3 – Reops-Jamph-Ollama       │
+              │       Ollama LLM – Port 11434           │
+              │                                         │
+              │   Modell: qwen2.5-coder:7b (7B par.)    │
+              │   Kjører lokalt på NAIS / Kubernetes     │
+              │   Ingen brukerdata forlater             │
+              │   plattformen (personvern ivaretatt)    │
+              └─────────────────────────────────────────┘
 ```
 
-*Figur 1: Overordnet systemarkitektur med tre tjenester.*
+*Figur 1: Overordnet systemarkitektur med tre tjenester, datakommunikasjon og BigQuery-tilkobling.*
 
 ---
 
@@ -305,15 +395,13 @@ Applikasjonen benytter React Router v7. Alle ruter er definert i `src/routes.tsx
 | Sti | Komponent | Formål |
 |-----|-----------|--------|
 | `/` | `Home` | Forside |
-| `/ki-assistent` | `KunstigInteligensBygger` | Hoved-KI-dashbord |
-| `/kunstig-intelligens-bygger` | `KunstigInteligensBygger` | Alias for `/ki-assistent` |
+| `/endelig-ki` | `EndeligKI` | Hoved-KI-dashbord (nåværende produksjonsversjon) |
 | `/ki-bygger` | `KiBygger` | Alternativ KI-bygger |
+| `/endelig-prototype` | `EndeligPrototype` | Endelig prototype (forgjenger) |
 | `/grafbygger` | `Charts` | Manuell grafbygger |
 | `/sql` | `SqlEditor` | Direkte SQL-editor |
 | `/ai-bygger` | `AiBygger` | AI-bygger (bare layout) |
-| `/ai-builder` | `AiChartBuilder` | AI-grafbygger (ny versjon) |
 | `/prototype3` | `Prototype3` | Prototype 3 |
-| `/prototype4` | `Prototype4` | Prototype 4 |
 | `/dashboards` | `DashboardOverview` | Dashbordoversikt |
 | `/dashboard` | `Dashboard` | Enkelt dashbord |
 | `/grafdeling` | `Grafdeling` | Del graf/widget |
@@ -345,6 +433,25 @@ Applikasjonen benytter React Router v7. Alle ruter er definert i `src/routes.tsx
 - **Bare** (`/ai-bygger`, `/widget`): Ingen header/footer, full skjermbredde
 - **Hjemside** (`/`): Kun `<main>` uten sidebegrensning
 - **Standard**: `Page.Block` med `xl`-bredde og header/footer fra NAV Designsystem
+
+#### Formål
+Tjeneste 1 er det eneste kontaktpunktet for sluttbrukeren. Den samler alle analyseflater i étt grensesnitt og håndterer autentisering, BigQuery-kommunikasjon og visualisering.
+
+#### Subrutiner og nøkkelmoduler
+
+| Modul | Sti | Ansvar |
+|-------|-----|--------|
+| `App.tsx` | `src/App.tsx` | Rotkomponent, layoutvalg, React Router-integrasjon |
+| `routes.tsx` | `src/routes.tsx` | Ruteregistrering for alle 35+ sidekomponenter |
+| `server.js` | `server.js` | Express BFF: BigQuery-proxy, Basic Auth, audit-logging |
+| `aiSqlApi.ts` | `src/components/dashboardjson/api/aiSqlApi.ts` | Kaller Kotlin API `/api/sql` med naturlig-språkspørsmål |
+| `bigQueryApi.ts` | `src/components/dashboardjson/api/bigQueryApi.ts` | Kaller `/api/bigquery` via server.js |
+| `batchedDashboardFetcher.ts` | `src/lib/batchedDashboardFetcher.ts` | Batcher økt-metrics til én BigQuery-skanning |
+
+#### Særlige forhold
+- **BFF-mønster (Backend-for-Frontend):** All BigQuery-kommunikasjon går via `server.js` for å unngå CORS-problemer og holde service account-credentials på server-siden – de eksponeres aldri til nettleseren.
+- **Audit-trail:** `addAuditLogging()` i `server.js` tagger alle BigQuery-spørringer med NAV-ident som label og SQL-kommentar, noe som gir full sporbarhet i BigQuery-loggene.
+- **Ingen server-side state:** Alle widgets og dashbordtilstander lagres i nettleserens `localStorage` – det finnes ingen dedikert database for frontend-tilstand.
 
 ---
 
@@ -383,6 +490,26 @@ Backend-API-et er skrevet i Kotlin med Ktor-rammeverket og Netty som HTTP-server
 }
 ```
 
+#### Formål
+Tjeneste 2 er systemets intelligente kjerne. Den oversetter naturlig språk til BigQuery-SQL ved å orkestrere Ollama-kall gjennom RagV2-pipeline, og eksponerer alle API-operasjoner over HTTP.
+
+#### Subrutiner og nøkkelmoduler
+
+| Klasse / fil | Pakke | Ansvar |
+|---|---|---|
+| `Application.kt` | `no.jamph.ragumami` | Applikasjonsoppstart, Ktor-konfigurasjon, alle HTTP-endepunkter |
+| `Routes.kt` | `no.jamph.ragumami` | Laster `routes.json` – URL-er, BQ-prefix og standardmodell |
+| `RagV2SqlService.kt` | `ragV2` | Orkestrerer 4-stegs pipeline |
+| `OllamaClient.kt` | `core/llm` | HTTP-klient mot Ollama med retry og timeouts |
+| `BigQuerySchemaService.kt` | `bigquery` | Skjemaoppslag og `isHealthy()`-sjekk |
+| `BigQueryQueryService.kt` | `bigquery` | Utfører BigQuery-spørringer via Google SDK |
+| `BigQueryUrltoSiteIdAndUrlPath.kt` | `bigquery` | URL → (siteId, urlPath) for SQL-filtrering |
+
+#### Særlige forhold
+- **Fett JAR-distribusjon:** Maven bygger én enkelt JAR (`api-1.0-SNAPSHOT-jar-with-dependencies.jar`) som inneholder alle avhengigheter, noe som forenkler containerisering og eliminerer runtime-avhengigheter.
+- **Mock-modus:** `BigQuerySchemaServiceMock` lar benchmarking og SQL-logikktester kjøres helt uten BigQuery-tilkobling. Den inneholder 31 hardkodede norske nettsteder med statisk skjema.
+- **CORS-oppsett:** Konfigurert for `localhost:3000`, `localhost:5173`, `localhost:5174` og produksjons-URL-ene definert i `routes.json`.
+
 ---
 
 ### 4.3 Tjeneste 3 – Reops-Jamph-Ollama
@@ -394,51 +521,103 @@ En containerisert Ollama-tjeneste som kjører en lokal LLM uten å sende data ti
 **Entrypoint-logikk (`entrypoint.sh`):**  
 I Kubernetes er `/tmp` eneste skrivbare mappe. Modellene bakes inn i Docker-imaget under `/baked-models` ved byggetidspunkt. Ved oppstart kopierer skriptet disse til `/tmp` (Ollamas hjemmemappe), deretter startes `ollama serve`.
 
+#### Formål
+Tjeneste 3 tilbyr lokal LLM-inferens uten å sende brukerdata til eksterne tjenester. Dette er avgjørende for systemets personvernprofil – alle spørsmål behandles på NAVs egen infrastruktur (NAIS).
+
+#### Subrutiner og nøkkelmoduler
+
+| Fil | Ansvar |
+|-----|--------|
+| `Dockerfile` | Bruker ferdigbygd Ollama-binary – rask bygging, men inneholder kjente CVE-er |
+| `Dockerfile.build-from-source` | Bygger fra patchet Go 1.24.4; fikser CVE-2025-22871, CVE-2025-47907, CVE-2025-61723 |
+| `entrypoint.sh` | Håndterer K8s `/tmp`-begrensning; kopierer modeller og starter `ollama serve` |
+
+#### Særlige forhold
+- **K8s `/tmp`-begrensning:** I Kubernetes er kun `/tmp` skrivbart. `entrypoint.sh` setter `HOME`, `OLLAMA_HOME` og `OLLAMA_MODELS` til `/tmp` og kopierer bakte modeller dit ved oppstart for å omgå denne begrensningen.
+- **Modell bakt inn i imaget:** `qwen2.5-coder:7b` lastes ned under `docker build` og lagres i `/baked-models`. Dette eliminerer nettverkshenting ved oppstart, men gir et Docker-image på ~6 GB.
+- **GPU-akselerasjon:** Ollama oppdager GPU (CUDA/ROCm) automatisk. Med GPU reduseres responstiden fra ~30–60 sekunder til ~3–8 sekunder per SQL-generering.
+
 ---
 
 ## 5. Hovedprogram og underprogrammer
+
+---
+
+### Backend – Reops-Jamph-Rag-Api-Umami (Kotlin / Ktor)
 
 ### 5.1 RagV2 SQL-genereringspipeline
 
 Kjernen i systemet er en 4-stegs pipeline for å konvertere et naturlig-språkspørsmål til en BigQuery-SQL-spørring. Figur 2 viser flyten.
 
 ```
-Brukerens spørsmål
-        │
-        ▼
-┌───────────────────────────────────────────────────────────────┐
-│  Steg 1: PickASqlQuestionTypeLlm                              │
-│  Klassifiserer spørsmålet via Ollama (lav temperatur)         │
-│  Returtyper: linear | rankings | search | journey | cards     │
-│              └─────────────────────────────────── default     │
-└─────────────────────────┬─────────────────────────────────────┘
-                          │
-              ┌───────────┴──────────┐
-              │ Mal-basert path      │  Default path
-              │ (linear/rankings/    │  (alle andre)
-              │  search/journey/     │
-              │  cards)              │
-              ▼                      ▼
-┌─────────────────────┐    ┌─────────────────────────────────────┐
-│ Steg 2:             │    │  Steg 4: OtherLlm                   │
-│ PickVariableJsonLlm │    │  Sender fullt skjema + spørsmål     │
-│ Henter ut variabler │    │  til Ollama for fri SQL-generering  │
-│ som JSON            │    │  (fallback for komplekse spørsmål)  │
-└────────┬────────────┘    └─────────────────────────────────────┘
-         │                          │
-         ▼                          │
-┌─────────────────────┐             │
-│ Steg 3: ConstructSQL│             │
-│ Fyller inn variabler│             │
-│ i SQL-mal           │             │
-└────────┬────────────┘             │
-         └──────────────────────────┘
-                    │
-                    ▼
-            Ferdig SQL-spørring
+  Brukerens spørsmål på naturlig språk
+  (f.eks. «Vis daglige sidevisninger siste 30 dager på aksel.nav.no»)
+                        │
+                        ▼
+  ┌───────────────────────────────────────────────────────────────────────┐
+  │  STEG 1 – PickASqlQuestionTypeLlm                                     │
+  │  Klassifiserer spørsmålet via Ollama (temperatur: 0.0)                │
+  │  Inntil 3 forsøk med ulike promptformater ved feil                    │
+  │  Feil etter alle forsøk → Error 10000                                 │
+  │                                                                       │
+  │  Returtyper:                                                          │
+  │  linear   – tidsserier og trendanalyse med lineær regresjon           │
+  │  rankings – topp-N rangering av URL-stier                             │
+  │  search   – søkeordsfrekvens (event_name = 'sok')                     │
+  │  journey  – navigasjonsflyt mellom to sider                           │
+  │  cards    – nøkkeltallskort med flere metrics parallelt               │
+  │  default  – alt annet (faller gjennom til Steg 4)                     │
+  └──────────────────────────────┬────────────────────────────────────────┘
+                                 │
+               ┌─────────────────┴──────────────────┐
+               │ type ≠ default                      │ type = default
+               ▼                                     ▼
+  ┌────────────────────────────┐   ┌──────────────────────────────────────────┐
+  │  STEG 2                    │   │  STEG 4 – OtherLlm  (fallback-sti)       │
+  │  PickVariableJsonLlm       │   │                                          │
+  │                            │   │  Henter BigQuery-skjemakonteksten        │
+  │  Sender forenklet SQL-     │   │  fra BigQuerySchemaService               │
+  │  utkast + JSON-skjema      │   │                                          │
+  │  til Ollama                │   │  Sender fullt skjema + spørsmål          │
+  │                            │   │  til Ollama for fri SQL-generering       │
+  │  Modellen fyller inn:      │   │                                          │
+  │  datoer, metrikker,        │   │  Ekstraherer SQL fra kodeblokk           │
+  │  limit, filtre osv.        │   │  eller ved SELECT-nøkkelord              │
+  │                            │   │                                          │
+  │  Inntil 3 forsøk           │   │  Inntil 3 forsøk                         │
+  │  Feil → Error 10001        │   │  Feil → Error 10002                      │
+  └────────────┬───────────────┘   └─────────────────────┬────────────────────┘
+               │                                         │
+               ▼                                         │
+  ┌────────────────────────────┐                         │
+  │  STEG 3 – ConstructSQL     │                         │
+  │                            │                         │
+  │  Henter SQL-mal for        │                         │
+  │  spørsmålstypen            │                         │
+  │                            │                         │
+  │  Erstatter plassholdere:   │                         │
+  │  [WEBSITE_ID] → UUID       │                         │
+  │  [PATH]       → URL-sti    │                         │
+  │  [START_DATE] → dato       │                         │
+  │  [END_DATE]   → dato       │                         │
+  │  [METRIC_SQL] → aggregat   │                         │
+  │  [WHERE_FILTERS] → filter  │                         │
+  │  prefix.      → BQ-prosjekt│                         │
+  │                            │                         │
+  │  Rydder dobble backticks   │                         │
+  │  og ubrukte plassholdere   │                         │
+  │  Feil → Error 10003        │                         │
+  └────────────┬───────────────┘                         │
+               └─────────────────────────────────────────┘
+                                    │
+                                    ▼
+               ┌────────────────────────────────────────────┐
+               │       Ferdig BigQuery SQL-spørring         │
+               │  Returneres i SQLResponse { sql, ... }    │
+               └────────────────────────────────────────────┘
 ```
 
-*Figur 2: RagV2 SQL-genereringspipeline med to parallelle stier.*
+*Figur 2: RagV2 SQL-genereringspipeline med mal-basert sti (Steg 1–3) og fallback-sti (Steg 4).*
 
 #### Steg 1 – Klassifisering (`PickASqlQuestionTypeLlm`)
 
@@ -486,7 +665,7 @@ For `default`-typen hentes hele BigQuery-skjemakonteksten fra `BigQuerySchemaSer
 
 ---
 
-### 5.2 Forhåndsbygde SQL-maler (`PrebuiltSchemas`)
+### 5.2 Forhåndsbygde SQL-maler (`PrebuiltSchemas`) *(Backend)*
 
 Hver spørsmålstype har en tilhørende `SchemaTriple` bestående av:
 - `bigQuerySchema` – forenklet skjemabeskrivelse for LLM
@@ -507,7 +686,7 @@ Hver spørsmålstype har en tilhørende `SchemaTriple` bestående av:
 
 ---
 
-### 5.3 URL-til-nettsted-oppslag (`BigQueryUrltoSiteIdAndUrlPath`)
+### 5.3 URL-til-nettsted-oppslag (`BigQueryUrltoSiteIdAndUrlPath`) *(Backend)*
 
 Konverterer en full URL (f.eks. `https://aksel.nav.no/designsystemet`) til:
 - `siteId` – UUID hentet ved domeneoppslag mot `public_website`-tabellen
@@ -523,7 +702,7 @@ Konverterer en full URL (f.eks. `https://aksel.nav.no/designsystemet`) til:
 
 ---
 
-### 5.4 OllamaClient
+### 5.4 OllamaClient *(Backend)*
 
 HTTP-klient for kommunikasjon med Ollama-tjenesten.
 
@@ -544,29 +723,39 @@ Klienten tilbyr følgende metoder:
 
 ---
 
+---
+
+### Frontend – Jamph-Umami-Frontend (React / Node.js)
+
 ### 5.5 Frontendkomponenter – detaljert oversikt
 
-#### `KunstigInteligensBygger.tsx` – Hoved-KI-dashbord
+#### `EndeligKI.tsx` – Hoved-KI-dashbord (produksjonsversjon)
 
-Programmets viktigste brukergrensesnitt. Tilstandsmaskin med følgende hovedelementer:
+Programmets viktigste brukergrensesnitt, tilgjengelig på ruten `/endelig-ki`. Tilstandsmaskin med følgende hovedelementer:
 
 | Tilstand | Beskrivelse |
 |----------|-------------|
-| `prompt` | Brukerens naturligspråkspørsmål |
-| `query` | Generert SQL-spørring |
-| `chartType` | Valgt visualiseringstype |
-| `urlContext` | Valgt nettsted + URL-sti |
-| `widgets` | Array av dashboard-widgets |
-| `runtimeResults` | Kjøretidsresultater per widget |
-| `isExecuting` | Laster-tilstand |
+| `activeTab` | Aktiv fane: `'grafbygger'` (SQL/KI) eller dashbord-fane |
+| `url` | Valgt nettsted-URL fra URL-søksskjema |
+| `kiPrompt` | Brukerens naturligspråkspørsmål |
+| `kiSuggestion` | SQL-forslag returnert fra RagV2-API |
+| `sqlValue` | Gjeldende SQL-spørring (kan redigeres manuelt) |
+| `grafTab` | Valgt visualiseringstype (`'linechart'`, `'barchart'`, osv.) |
+| `grafTitle` | Grafens visningstittel |
+| `previewResult` | Rå resultatdata fra BigQuery |
+| `ragLoading` | `true` mens SQL-generering pågår |
+| `queryLoading` | `true` mens BigQuery-spørring kjøres |
+| `error` | Feilmelding ved mislykkede kall |
+| `dashboards` | Liste over lagrede dashbord-navn (localStorage) |
+| `selectedDashboard` | Aktivt valgt dashbord |
 
 **Interaksjonsflyt:**
-1. Bruker skriver inn URL og velger nettsted i `UrlSearchFormPrototype`
-2. Bruker skriver spørsmål og velger charttype
-3. Klikker «Generer SQL» → `generateSqlFromPrompt()` kalles
-4. SQL vises i `SqlCodeEditor` (kan redigeres manuelt)
-5. Klikker «Kjør» → `executeBigQueryQuery()` kalles
-6. Resultat vises i dashboard-widget
+1. Bruker skriver inn URL og velger nettsted
+2. Bruker skriver spørsmål på naturlig språk i `kiPrompt`-feltet
+3. Klikker «Generer SQL» → RAG-API kalles, `kiSuggestion` populeres
+4. SQL vises i redigerbar editor (`sqlValue`), kan justeres manuelt
+5. Klikker «Kjør» → BigQuery-spørring sendes via BFF, `previewResult` settes
+6. Resultat visualiseres i valgt graftype (`grafTab`)
 
 #### `components/dashboard/` – Chartkomponenter
 
@@ -594,7 +783,7 @@ Tjener tre formål:
 
 ---
 
-### 5.6 `BigQuerySchemaService` – Skjemaoppslag og helsestatus
+### 5.6 `BigQuerySchemaService` – Skjemaoppslag og helsestatus *(Backend)*
 
 Implementerer `BigQuerySchemaProvider`-grensesnittet med følgende metoder:
 
@@ -610,7 +799,7 @@ Implementerer `BigQuerySchemaProvider`-grensesnittet med følgende metoder:
 
 ---
 
-### 5.7 Batchet datahenting (`batchedDashboardFetcher.ts`)
+### 5.7 Batchet datahenting (`batchedDashboardFetcher.ts`) *(Frontend)*
 
 Optimalisering for dashbord med mange widgets: Øktbaserte metrics (land, nettleser, enhet, OS, skjerm, språk) deler samme dataskanning. `batchedDashboardFetcher` henter rådata én gang og beregner alle aggregeringer på klientsiden, noe som reduserer BigQuery-kostnader betraktelig.
 
@@ -769,7 +958,40 @@ curl http://localhost:8004/health
 
 ### 9.1 Teststrategioversikt
 
-Systemet benytter tre testlagsnivåer:
+#### Overordnet mål for testingen
+Testingen av JAMPH SQL KI-assistent har som primærmål å verifisere at den genererte SQL-en er **syntaktisk korrekt** og **semantisk riktig** – dvs. at spørringen faktisk returnerer de dataene brukeren etterspurte. Et sekundært mål er å kvantifisere ytelsesegenskapene (responstid, token-hastighet) for ulike LLM-modeller slik at den best egnede modellen kan velges for produksjon.
+
+#### Omfang og avgrensninger
+
+**Inkludert i testingen:**
+- SQL-korrekthet: regelbasert sjekk mot 12 testcase-spørsmål med kjente krav
+- SQL-syntaks: statisk validering av all generert SQL med JSQLParser
+- Dialektstøtte: norsk og engelsk, inkl. dialekter og skrivefeil
+- Ytelse og kostnadsestimering: responstid, token-hastighet og BigQuery-dataskanning per modell
+
+**Ikke inkludert (avgrensning):**
+- Brukergrensesnitt-testing (UI): manuelt verifisert – ingen automatisert UI-testpakke er konfigurert
+- Last- og skaleringstest av BigQuery-tilkoblingen
+- Automatisert akseptansetesting med sluttbrukere
+- Frontend-enhetstester: ingen Jest/Vitest-testpakke er satt opp i prosjektet
+
+#### Statisk testing
+Statisk testing ble gjennomført ved manuell gjennomgang av:
+- SQL-maler i `PrebuiltSchemas.kt` – sjekket for logiske feil, korrekte plassholdere og gyldig BigQuery-syntaks
+- Kravspesifikasjonen (K1–K12) – verifisert samsvar med implementasjon (se seksjon 2)
+- Regex-regler og JSQLParser-konfigurasjon i `ValidateSqlQuery.kt` – dekker BigQuery-spesifikke konstruksjoner (`QUALIFY`, tidsenhetargumenter)
+
+#### Dynamisk testing – testnivåer
+
+| Testnivå | Implementert av | Beskrivelse |
+|----------|----------------|-------------|
+| Enhets-/integrasjonstest | `LlmSqlLogic.kt` | 12 spørsmål kjøres mot RagV2-pipeline; regelbaserte krav sjekkes per spørsmål |
+| Semantisk test | `DialectValidetaLlmToSql.kt` | SQL kjøres mot BigQuery; resultat sammenlignes med fasit (±5 % toleranse) |
+| Syntaksvalidering | `ValidateSqlQuery.kt` | All generert SQL valideres statisk med JSQLParser før retur til klient |
+| Ytelsesmåling | `TokenSpeedMeasurer`, `EndToEndTimer` | Tokens/sek og ende-til-ende-tid måles per modell (5 kjøringer, gjennomsnitt) |
+| Systemtest / benchmark | `ModellBenchmarkRunner2.kt` | Fullstendig modellbenchmark via `/api/benchmark` og SSE-streaming |
+
+Systemet benytter tre overordnede testlagsnivåer:
 
 1. **Enhets- og integrasjonstesting** – automatiserte SQL-korrekthetstester
 2. **Dialekttesting** – semantisk SQL-validering mot kjente fasitsvar
@@ -863,8 +1085,8 @@ Alle benchmarkingsresultater returneres som JSON via `/api/benchmark` og skrives
 
 ## Figurliste
 
-- **Figur 1** (avsnitt 4): Overordnet systemarkitektur med tre tjenester
-- **Figur 2** (avsnitt 5.1): RagV2 SQL-genereringspipeline med to parallelle stier
+- **Figur 1** (avsnitt 4): Overordnet systemarkitektur med tre tjenester, datakommunikasjon og BigQuery-tilkobling
+- **Figur 2** (avsnitt 5.1): RagV2 SQL-genereringspipeline med mal-basert sti (Steg 1–3) og fallback-sti (Steg 4)
 
 ## Tabellliste
 
