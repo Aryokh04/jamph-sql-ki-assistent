@@ -1,3 +1,4 @@
+# Innleveringsfrist versjon
 # JAMPH-sql-ki-assistent
 
 Dette er ment som en installasjonsmappe. Vår assistent er komponenbasert.
